@@ -290,11 +290,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
     private long actualCRC32;
     private boolean effectivenessUpdated;
 
-    @Override
-    public boolean detectRom(byte[] rom) {
-        return detectRomInner(rom, rom.length);
-    }
-
     private static boolean detectRomInner(byte[] rom, int romSize) {
         // size check
         return romSize >= GBConstants.minRomSize && romSize <= GBConstants.maxRomSize && checkRomEntry(rom) != null;
@@ -400,7 +395,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         int offset = romEntry.getValue("MoveNamesOffset");
         String[] moveNames = new String[Gen2Constants.moveCount + 1];
         for (int i = 1; i <= Gen2Constants.moveCount; i++) {
-            moveNames[i] = readVariableLengthString(offset, false);
+            moveNames[i] = readVariableLengthString(offset);
             offset += lengthOfStringAt(offset, false) + 1;
         }
         return moveNames;
@@ -821,7 +816,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         if (romEntry.getValue("CanChangeStarterText") > 0) {
             int[] starterTextOffsets = romEntry.arrayEntries.get("StarterTextOffsets");
             for (int i = 0; i < 3 && i < starterTextOffsets.length; i++) {
-                writeVariableLengthString(String.format("%s?\\e", newStarters.get(i).name), starterTextOffsets[i], true);
+                writeVariableLengthString(String.format("%s?\\e", newStarters.get(i).name), starterTextOffsets[i]);
             }
         }
         return true;
@@ -1139,7 +1134,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
                 tr.offset = offs;
                 tr.index = index;
                 tr.trainerclass = i;
-                String name = readVariableLengthString(offs, false);
+                String name = readVariableLengthString(offs);
                 tr.name = name;
                 tr.fullDisplayName = tcnames.get(i) + " " + name;
                 offs += lengthOfStringAt(offs, false) + 1;
@@ -1631,7 +1626,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         int offset = romEntry.getValue("TrainerClassNamesOffset");
         List<String> trainerClassNames = new ArrayList<>();
         for (int j = 0; j < amount; j++) {
-            String name = readVariableLengthString(offset, false);
+            String name = readVariableLengthString(offset);
             offset += lengthOfStringAt(offset, false) + 1;
             trainerClassNames.add(name);
         }
@@ -1676,33 +1671,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
             applyBWEXPPatch();
         } else if (tweak == MiscTweak.FASTEST_TEXT) {
             applyFastestTextPatch();
-        } else if (tweak == MiscTweak.LOWER_CASE_POKEMON_NAMES) {
-            applyCamelCaseNames();
-        } else if (tweak == MiscTweak.RANDOMIZE_CATCHING_TUTORIAL) {
-            randomizeCatchingTutorial();
-        } else if (tweak == MiscTweak.BAN_LUCKY_EGG) {
-            allowedItems.banSingles(Gen2Items.luckyEgg);
-            nonBadItems.banSingles(Gen2Items.luckyEgg);
-        } else if (tweak == MiscTweak.UPDATE_TYPE_EFFECTIVENESS) {
-            updateTypeEffectiveness();
         }
-    }
-
-    private void randomizeCatchingTutorial() {
-        if (romEntry.arrayEntries.containsKey("CatchingTutorialOffsets")) {
-            // Pick a pokemon
-            int pokemon = this.random.nextInt(Gen2Constants.pokemonCount) + 1;
-            while (pokemon == Species.unown) {
-                // Unown is banned
-                pokemon = this.random.nextInt(Gen2Constants.pokemonCount) + 1;
-            }
-
-            int[] offsets = romEntry.arrayEntries.get("CatchingTutorialOffsets");
-            for (int offset : offsets) {
-                rom[offset] = (byte) pokemon;
-            }
-        }
-
     }
 
     private void applyBWEXPPatch() {
@@ -1865,7 +1834,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
 
         for (int i = 0; i < lmCount; i++) {
             int lmNameOffset = calculateOffset(lmBank, readWord(lmOffset + i * 4 + 2));
-            landmarkNames[i] = readVariableLengthString(lmNameOffset, false).replace("\\x1F", " ");
+            landmarkNames[i] = readVariableLengthString(lmNameOffset).replace("\\x1F", " ");
         }
 
     }

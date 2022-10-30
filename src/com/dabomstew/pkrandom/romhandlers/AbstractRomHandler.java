@@ -37,7 +37,6 @@ import com.dabomstew.pkrandom.pokemon.*;
 
 public abstract class AbstractRomHandler implements RomHandler {
 
-    private boolean restrictionsSet;
     protected List<Pokemon> mainPokemonList;
     protected List<Pokemon> mainPokemonListInclFormes;
     private List<Pokemon> noLegendaryList, onlyLegendaryList, ultraBeastList;
@@ -67,8 +66,6 @@ public abstract class AbstractRomHandler implements RomHandler {
             if (!settings.isLimitPokemon()) {
             }
         }
-
-        restrictionsSet = true;
         mainPokemonList = this.allPokemonWithoutNull();
         mainPokemonListInclFormes = this.allPokemonInclFormesWithoutNull();
 
@@ -95,13 +92,11 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     public Pokemon randomPokemon() {
-        checkPokemonRestrictions();
         return mainPokemonList.get(this.random.nextInt(mainPokemonList.size()));
     }
 
     @Override
     public Pokemon randomNonLegendaryPokemon() {
-        checkPokemonRestrictions();
         return noLegendaryList.get(this.random.nextInt(noLegendaryList.size()));
     }
     private List<Pokemon> twoEvoPokes;
@@ -145,7 +140,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean allowAltFormes = settings.isAllowWildAltFormes();
 
         List<EncounterSet> currentEncounters = this.getEncounters(useTimeOfDay);
-        checkPokemonRestrictions();
 
         // New: randomize the order encounter sets are randomized in.
         // Leads to less predictable results for various modifiers.
@@ -179,7 +173,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean usePowerLevels = settings.getWildPokemonRestrictionMod() == Settings.WildPokemonRestrictionMod.SIMILAR_STRENGTH;
         boolean noLegendaries = settings.isBlockWildLegendaries();
 
-        checkPokemonRestrictions();
 
         // New: randomize the order encounter sets are randomized in.
         // Leads to less predictable results for various modifiers.
@@ -264,9 +257,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean isTypeThemedEliteFourGymOnly = settings.getTrainersMod() == Settings.TrainersMod.TYPE_THEMED_ELITE4_GYMS;
         boolean distributionSetting = settings.getTrainersMod() == Settings.TrainersMod.DISTRIBUTED;
         boolean mainPlaythroughSetting = settings.getTrainersMod() == Settings.TrainersMod.MAINPLAYTHROUGH;
-        boolean shinyChance = settings.isShinyChance();
 
-        checkPokemonRestrictions();
 
         // Set up Pokemon pool
         cachedReplacementLists = new TreeMap<>();
@@ -412,12 +403,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                 tp.pokemon = newPK;
                 tp.abilitySlot = getRandomAbilitySlot(newPK);
                 tp.resetMoves = true;
-
-                if (shinyChance) {
-                    if (this.random.nextInt(256) == 0) {
-                        tp.IVs |= (1 << 30);
-                    }
-                }
             }
         }
 
@@ -427,7 +412,6 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     @Override
     public void rivalCarriesStarter() {
-        checkPokemonRestrictions();
         List<Trainer> currentTrainers = this.getTrainers();
         rivalCarriesStarterUpdate(currentTrainers, "RIVAL", isORAS ? 0 : 1);
         rivalCarriesStarterUpdate(currentTrainers, "FRIEND", 2);
@@ -446,13 +430,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         return slot + 1;
     }
 
-    public int getValidAbilitySlotFromOriginal(Pokemon pokemon, int originalAbilitySlot) {
-        // This is used in cases where one Trainer Pokemon evolves into another. If the unevolved Pokemon
-        // is using slot 2, but the evolved Pokemon doesn't actually have a second ability, then we
-        // want the evolved Pokemon to use slot 1 for safety's sake.
-        if (originalAbilitySlot == 2 && pokemon.ability2 == 0) {
-            return 1;
-        }
+    public int getValidAbilitySlotFromOriginal(int originalAbilitySlot) {
         return originalAbilitySlot;
     }
 
@@ -485,7 +463,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean allowAltFormes = settings.isAllowStaticAltFormes();
 
         // Load
-        checkPokemonRestrictions();
         List<StaticEncounter> currentStaticPokemon = this.getStaticPokemon();
         List<StaticEncounter> replacements = new ArrayList<>();
 
@@ -594,17 +571,8 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     private void setPokemonAndFormeForStaticEncounter(StaticEncounter newStatic, Pokemon pk) {
-        boolean checkCosmetics = true;
         Pokemon newPK = pk;
         int newForme = 0;
-        if (pk.formeNumber > 0) {
-            newForme = pk.formeNumber;
-            newPK = pk.baseForme;
-            checkCosmetics = false;
-        }
-        if (checkCosmetics && pk.cosmeticForms > 0) {
-            newForme = pk.getCosmeticFormNumber(this.random.nextInt(pk.cosmeticForms));
-        }
         newStatic.pkmn = newPK;
         newStatic.forme = newForme;
         for (StaticEncounter linked : newStatic.linkedEncounters) {
@@ -780,7 +748,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         changeStarterWithTag(currentTrainers, prefix + j + "-" + i, thisStarter, abilitySlot);
                     }
                     thisStarter = pickRandomEvolutionOf(thisStarter, true);
-                    int evolvedAbilitySlot = getValidAbilitySlotFromOriginal(thisStarter, abilitySlot);
+                    int evolvedAbilitySlot = getValidAbilitySlotFromOriginal(abilitySlot);
                     for (; j <= highestRivalNum; j++) {
                         if (getLevelOfStarter(currentTrainers, prefix + j + "-" + i) >= 36) {
                             break;
@@ -788,7 +756,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         changeStarterWithTag(currentTrainers, prefix + j + "-" + i, thisStarter, evolvedAbilitySlot);
                     }
                     thisStarter = pickRandomEvolutionOf(thisStarter, false);
-                    evolvedAbilitySlot = getValidAbilitySlotFromOriginal(thisStarter, abilitySlot);
+                    evolvedAbilitySlot = getValidAbilitySlotFromOriginal(abilitySlot);
                     for (; j <= highestRivalNum; j++) {
                         changeStarterWithTag(currentTrainers, prefix + j + "-" + i, thisStarter, evolvedAbilitySlot);
                     }
@@ -813,6 +781,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     private int getLevelOfStarter(List<Trainer> currentTrainers, String tag) {
+        int highestLevel = 0;
         for (Trainer t : currentTrainers) {
             if (t.tag != null && t.tag.equals(tag)) {
                 // Bingo, get highest level
@@ -821,7 +790,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 // If it's tagged the same we can assume it's the same team
                 // just the opposite gender or something like that...
                 // So no need to check other trainers with same tag.
-                int highestLevel = t.pokemon.get(0).level;
+                highestLevel = t.pokemon.get(0).level;
                 int trainerPkmnCount = t.pokemon.size();
                 for (int i = 1; i < trainerPkmnCount; i++) {
                     int levelBonus = (i == trainerPkmnCount - 1) ? 2 : 0;
@@ -829,10 +798,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                         highestLevel = t.pokemon.get(i).level;
                     }
                 }
-                return highestLevel;
+                break;
             }
         }
-        return 0;
+        return highestLevel;
     }
 
     private void changeStarterWithTag(List<Trainer> currentTrainers, String tag, Pokemon starter, int abilitySlot) {
@@ -867,9 +836,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     private int numEvolutions(Pokemon pk, int depth, int maxInterested) {
-        if (pk.evolutionsFrom.size() == 0) {
-            return 0;
-        } else {
+        {
             if (depth == maxInterested - 1) {
                 return 1;
             } else {
@@ -898,18 +865,18 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
 
             // check for cyclic evolutions from what we've already seen
-            boolean cyclic = false;
-            for (Evolution ev : pokemon.evolutionsFrom) {
+            //boolean cyclic = false;
+/*            for (Evolution ev : pokemon.evolutionsFrom) {
                 if (seenMons.contains(ev.to)) {
                     // cyclic evolution detected - bail now
                     cyclic = true;
                     break;
                 }
-            }
+            }*/
 
-            if (cyclic) {
+/*            if (cyclic) {
                 break;
-            }
+            }*/
 
             // We want to make split evolutions deterministic, but still random on a seed-to-seed basis.
             // Therefore, we take a random value (which is generated once per seed) and add it to the trainer's
@@ -1073,22 +1040,6 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     /* Helper methods used by subclasses and/or this class */
 
-    void checkPokemonRestrictions() {
-        if (!restrictionsSet) {
-            setPokemonPool(null);
-        }
-    }
-
-    protected void applyCamelCaseNames() {
-        List<Pokemon> pokes = getPokemon();
-        for (Pokemon pkmn : pokes) {
-            if (pkmn == null) {
-                continue;
-            }
-            pkmn.name = RomFunctions.camelCase(pkmn.name);
-        }
-
-    }
 
     private void setPlacementHistory(Pokemon newPK) {
         Integer history = getPlacementHistory(newPK);

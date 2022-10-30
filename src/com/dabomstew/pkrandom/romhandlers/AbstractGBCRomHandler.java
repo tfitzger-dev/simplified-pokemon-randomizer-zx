@@ -44,16 +44,12 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
     private int longestTableToken;
 
     public AbstractGBCRomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+        super(random);
     }
 
     protected void clearTextTables() {
         tb = new String[256];
-        if (d != null) {
-            d.clear();
-        } else {
-            d = new HashMap<String, Byte>();
-        }
+        d = new HashMap<String, Byte>();
         longestTableToken = 0;
     }
 
@@ -64,9 +60,6 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
                 String q = sc.nextLine();
                 if (!q.trim().isEmpty()) {
                     String[] r = q.split("=", 2);
-                    if (r[1].endsWith("\r\n")) {
-                        r[1] = r[1].substring(0, r[1].length() - 2);
-                    }
                     int hexcode = Integer.parseInt(r[0], 16);
                     if (tb[hexcode] != null) {
                         String oldMatch = tb[hexcode];
@@ -86,15 +79,12 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
 
     }
 
-    protected String readString(int offset, int maxLength, boolean textEngineMode) {
+    protected String readString(int offset, int maxLength) {
         StringBuilder string = new StringBuilder();
         for (int c = 0; c < maxLength; c++) {
             int currChar = rom[offset + c] & 0xFF;
             if (tb[currChar] != null) {
                 string.append(tb[currChar]);
-                if (textEngineMode && (tb[currChar].equals("\\r") || tb[currChar].equals("\\e"))) {
-                    break;
-                }
             } else {
                 if (currChar == GBConstants.stringTerminator) {
                     break;
@@ -112,28 +102,17 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
                 && (!textEngineMode || (rom[offset + len] != GBConstants.stringPrintedTextEnd && rom[offset + len] != GBConstants.stringPrintedTextPromptEnd))) {
             len++;
         }
-
-        if (textEngineMode
-                && (rom[offset + len] == GBConstants.stringPrintedTextEnd || rom[offset + len] == GBConstants.stringPrintedTextPromptEnd)) {
-            len++;
-        }
         return len;
     }
 
     protected byte[] translateString(String text) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while (text.length() != 0) {
-            int i = Math.max(0, longestTableToken - text.length());
-            if (text.charAt(0) == '\\' && text.charAt(1) == 'x') {
-                baos.write(Integer.parseInt(text.substring(2, 4), 16));
-                text = text.substring(4);
-            } else {
+            int i = Math.max(0, longestTableToken - text.length());{
                 while (!(d.containsKey(text.substring(0, longestTableToken - i)) || (i == longestTableToken))) {
                     i++;
                 }
-                if (i == longestTableToken) {
-                    text = text.substring(1);
-                } else {
+                {
                     baos.write(d.get(text.substring(0, longestTableToken - i)) & 0xFF);
                     text = text.substring(longestTableToken - i);
                 }
@@ -143,7 +122,7 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
     }
 
     protected String readFixedLengthString(int offset, int length) {
-        return readString(offset, length, false);
+        return readString(offset, length);
     }
 
     // pads the length with terminators, so length should be at least str's len
@@ -158,20 +137,14 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
         }
     }
 
-    protected void writeVariableLengthString(String str, int offset, boolean alreadyTerminated) {
+    protected void writeVariableLengthString(String str, int offset) {
         byte[] translated = translateString(str);
         System.arraycopy(translated, 0, rom, offset, translated.length);
-        if (!alreadyTerminated) {
-            rom[offset + translated.length] = GBConstants.stringTerminator;
-        }
     }
 
     protected int makeGBPointer(int offset) {
-        if (offset < GBConstants.bankSize) {
-            return offset;
-        } else {
-            return (offset % GBConstants.bankSize) + GBConstants.bankSize;
-        }
+        return (offset % GBConstants.bankSize) + GBConstants.bankSize;
+
     }
 
     protected int bankOf(int offset) {
@@ -179,15 +152,12 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
     }
 
     protected int calculateOffset(int bank, int pointer) {
-        if (pointer < GBConstants.bankSize) {
-            return pointer;
-        } else {
-            return (pointer % GBConstants.bankSize) + bank * GBConstants.bankSize;
-        }
+        return (pointer % GBConstants.bankSize) + bank * GBConstants.bankSize;
+
     }
 
-    protected String readVariableLengthString(int offset, boolean textEngineMode) {
-        return readString(offset, Integer.MAX_VALUE, textEngineMode);
+    protected String readVariableLengthString(int offset) {
+        return readString(offset, Integer.MAX_VALUE);
     }
 
     protected static boolean romSig(byte[] rom, String sig) {

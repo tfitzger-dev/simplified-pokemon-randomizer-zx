@@ -56,13 +56,9 @@ public interface RomHandler {
 
     boolean saveRomFile(String filename, long seed);
 
-    String loadedFilename();
-
     // =============================================================
     // Methods relating to game updates for the 3DS and Switch games
     // =============================================================
-
-    boolean loadGameUpdate(String filename);
 
     // ===========
     // Log methods

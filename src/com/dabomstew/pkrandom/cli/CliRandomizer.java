@@ -58,17 +58,7 @@ public class CliRandomizer {
                 if (rhf.isLoadable(romFileHandler.getAbsolutePath())) {
                     romHandler = rhf.create(RandomSource.instance());
                     romHandler.loadRom(romFileHandler.getAbsolutePath());
-                    if (updateFilePath != null && (romHandler.generationOfPokemon() == 6 || romHandler.generationOfPokemon() == 7)) {
-                        romHandler.loadGameUpdate(updateFilePath);
-                        if (!saveAsDirectory) {
-                            printWarning("Forcing save as directory since a game update was supplied.");
-                        }
-                        saveAsDirectory = true;
-                    }
-                    if (saveAsDirectory && romHandler.generationOfPokemon() != 6 && romHandler.generationOfPokemon() != 7) {
-                        saveAsDirectory = false;
-                        printWarning("Saving as directory does not make sense for non-3DS games, ignoring \"-d\" flag...");
-                    }
+
 
                     CliRandomizer.displaySettingsWarnings(settings, romHandler);
 
@@ -78,13 +68,6 @@ public class CliRandomizer {
                         extensions.remove(romHandler.getDefaultExtension());
 
                         fh = FileFunctions.fixFilename(fh, romHandler.getDefaultExtension(), extensions);
-                        if (romHandler instanceof AbstractDSRomHandler || romHandler instanceof Abstract3DSRomHandler) {
-                            String currentFN = romHandler.loadedFilename();
-                            if (currentFN.equals(fh.getAbsolutePath())) {
-                                printError(bundle.getString("GUI.cantOverwriteDS"));
-                                return false;
-                            }
-                        }
                     }
 
                     String filename = fh.getAbsolutePath();

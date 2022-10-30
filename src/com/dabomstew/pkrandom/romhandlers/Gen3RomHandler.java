@@ -56,11 +56,11 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     }
 
     public Gen3RomHandler(Random random) {
-        super(random, null);
+        super(random);
     }
 
     public Gen3RomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+        super(random);
     }
 
     private static class RomEntry {
@@ -362,11 +362,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     private int pickupItemsTableOffset;
     private long actualCRC32;
     private boolean effectivenessUpdated;
-
-    @Override
-    public boolean detectRom(byte[] rom) {
-        return detectRomInner(rom, rom.length);
-    }
 
     private static boolean detectRomInner(byte[] rom, int romSize) {
         if (romSize != Gen3Constants.size8M && romSize != Gen3Constants.size16M && romSize != Gen3Constants.size32M) {
@@ -726,14 +721,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                 int pokeSlot = Gen3Constants.hoennPokesStart + i;
                 int pokeOffs = offs + pokeSlot * Gen3Constants.baseStatsEntrySize;
                 String lowerName = pokeNames[pokeSlot].toLowerCase();
-                if (!this.matches(rom, pokeOffs, Gen3Constants.emptyPokemonSig) && !lowerName.contains("unused")
-                        && !lowerName.equals("?") && !lowerName.equals("-")) {
-                    usedSlots++;
-                    pokedexToInternal[Gen3Constants.unhackedRealPokedex + usedSlots] = pokeSlot;
-                    internalToPokedex[pokeSlot] = Gen3Constants.unhackedRealPokedex + usedSlots;
-                } else {
-                    internalToPokedex[pokeSlot] = 0;
-                }
+                internalToPokedex[pokeSlot] = 0;
             }
             // remove the fake extra slots
             for (int i = usedSlots + 1; i <= Gen3Constants.unhackedMaxPokedex - Gen3Constants.unhackedRealPokedex; i++) {
@@ -2849,18 +2837,13 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     }
 
     private Pokemon randomPokemonLimited(int maxValue, boolean blockNonMales) {
-        checkPokemonRestrictions();
         List<Pokemon> validPokemon = new ArrayList<>();
         for (Pokemon pk : this.mainPokemonList) {
             if (pokedexToInternal[pk.number] <= maxValue && (!blockNonMales || pk.genderRatio <= 0xFD)) {
                 validPokemon.add(pk);
             }
         }
-        if (validPokemon.size() == 0) {
-            return null;
-        } else {
-            return validPokemon.get(random.nextInt(validPokemon.size()));
-        }
+        return validPokemon.get(random.nextInt(validPokemon.size()));
     }
 
     private void determineMapBankSizes() {
@@ -3078,8 +3061,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             applyRunningShoesIndoorsPatch();
         } else if (tweak == MiscTweak.FASTEST_TEXT) {
             applyFastestTextPatch();
-        } else if (tweak == MiscTweak.LOWER_CASE_POKEMON_NAMES) {
-            applyCamelCaseNames();
         } else if (tweak == MiscTweak.NATIONAL_DEX_AT_START) {
             patchForNationalDex();
         } else if (tweak == MiscTweak.RANDOMIZE_CATCHING_TUTORIAL) {

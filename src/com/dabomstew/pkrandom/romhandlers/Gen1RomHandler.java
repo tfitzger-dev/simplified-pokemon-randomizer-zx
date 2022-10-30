@@ -266,11 +266,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     private SubMap[] maps;
     private long actualCRC32;
 
-    @Override
-    public boolean detectRom(byte[] rom) {
-        return detectRomInner(rom, rom.length);
-    }
-
     public static boolean detectRomInner(byte[] rom, int romSize) {
         // size check
         return romSize >= GBConstants.minRomSize && romSize <= GBConstants.maxRomSize && checkRomEntry(rom) != null;
@@ -338,7 +333,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         int offset = romEntry.getValue("MoveNamesOffset");
         String[] moveNames = new String[moveCount + 1];
         for (int i = 1; i <= moveCount; i++) {
-            moveNames[i] = readVariableLengthString(offset, false);
+            moveNames[i] = readVariableLengthString(offset);
             offset += lengthOfStringAt(offset, false) + 1;
         }
         return moveNames;
@@ -781,7 +776,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
                 int[] starterTextOffsets = romEntry.arrayEntries.get("StarterTextOffsets");
                 for (int i = 0; i < 3 && i < starterTextOffsets.length; i++) {
                     writeVariableLengthString(String.format("So! You want\\n%s?\\e", newStarters.get(i).name),
-                            starterTextOffsets[i], true);
+                            starterTextOffsets[i]);
                 }
             }
 
@@ -1415,7 +1410,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         List<String> tcNames = new ArrayList<>();
         int offset = offsets[offsets.length - 1];
         for (int j = 0; j < Gen1Constants.tclassesCounts[1]; j++) {
-            String name = readVariableLengthString(offset, false);
+            String name = readVariableLengthString(offset);
             offset += lengthOfStringAt(offset, false) + 1;
             tcNames.add(name);
         }
@@ -1634,7 +1629,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         for (int i = 0; i < 0x25; i++) {
             int externalOffset = calculateOffset(mapNameBank, readWord(mapNameTableOffset + 1));
             usedExternal.add(externalOffset);
-            mapNames[i] = readVariableLengthString(externalOffset, false);
+            mapNames[i] = readVariableLengthString(externalOffset);
             mapNameTableOffset += 3;
         }
 
@@ -1644,7 +1639,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         while ((rom[mapNameTableOffset] & 0xFF) != 0xFF) {
             int maxMap = rom[mapNameTableOffset] & 0xFF;
             int nameOffset = calculateOffset(mapNameBank, readWord(mapNameTableOffset + 2));
-            String actualName = readVariableLengthString(nameOffset, false).trim();
+            String actualName = readVariableLengthString(nameOffset).trim();
             if (usedExternal.contains(nameOffset)) {
                 for (int i = lastMaxMap; i < maxMap; i++) {
                     if (maps[i] != null) {

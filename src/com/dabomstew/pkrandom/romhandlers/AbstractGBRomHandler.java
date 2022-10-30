@@ -40,29 +40,19 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
 
     protected byte[] rom;
     protected byte[] originalRom;
-    private String loadedFN;
 
-    public AbstractGBRomHandler(Random random, PrintStream logStream) {
+    public AbstractGBRomHandler(Random random) {
         super(random);
     }
 
     @Override
     public boolean loadRom(String filename) {
         byte[] loaded = loadFile(filename);
-        if (!detectRom(loaded)) {
-            return false;
-        }
         this.rom = loaded;
         this.originalRom = new byte[rom.length];
         System.arraycopy(rom, 0, originalRom, 0, rom.length);
-        loadedFN = filename;
         loadedRom();
         return true;
-    }
-
-    @Override
-    public String loadedFilename() {
-        return loadedFN;
     }
 
     @Override
@@ -82,24 +72,11 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
     }
 
     @Override
-    public boolean loadGameUpdate(String filename) {
-        // do nothing, as GB games don't have external game updates
-        return true;
-    }
-
-    @Override
-    public boolean canChangeStaticPokemon() {
-        return true;
-    }
-
-    @Override
     public boolean hasPhysicalSpecialSplit() {
         // Default value for Gen1-Gen3.
         // Handlers can override again in case of ROM hacks etc.
         return false;
     }
-
-    public abstract boolean detectRom(byte[] rom);
 
     public abstract void loadedRom();
 
@@ -109,20 +86,14 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
         try {
             return FileFunctions.readFileFullyIntoBuffer(filename);
         } catch (IOException ex) {
-            throw new RandomizerIOException(ex);
+            throw new RuntimeException(ex);
         }
     }
 
     protected static byte[] loadFilePartial(String filename, int maxBytes) {
         try {
             File fh = new File(filename);
-            if (!fh.exists() || !fh.isFile() || !fh.canRead()) {
-                return new byte[0];
-            }
             long fileSize = fh.length();
-            if (fileSize > Integer.MAX_VALUE) {
-                return new byte[0];
-            }
             FileInputStream fis = new FileInputStream(filename);
             byte[] file = FileFunctions.readFullyIntoBuffer(fis, Math.min((int) fileSize, maxBytes));
             fis.close();
@@ -130,21 +101,6 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
         } catch (IOException ex) {
             return new byte[0];
         }
-    }
-
-    protected void readByteIntoFlags(boolean[] flags, int offsetIntoFlags, int offsetIntoROM) {
-        int thisByte = rom[offsetIntoROM] & 0xFF;
-        for (int i = 0; i < 8 && (i + offsetIntoFlags) < flags.length; i++) {
-            flags[offsetIntoFlags + i] = ((thisByte >> i) & 0x01) == 0x01;
-        }
-    }
-
-    protected byte getByteFromFlags(boolean[] flags, int offsetIntoFlags) {
-        int thisByte = 0;
-        for (int i = 0; i < 8 && (i + offsetIntoFlags) < flags.length; i++) {
-            thisByte |= (flags[offsetIntoFlags + i] ? 1 : 0) << i;
-        }
-        return (byte) thisByte;
     }
 
     protected int readWord(int offset) {
@@ -162,18 +118,6 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
     protected void writeWord(byte[] data, int offset, int value) {
         data[offset] = (byte) (value % 0x100);
         data[offset + 1] = (byte) ((value / 0x100) % 0x100);
-    }
-
-    protected boolean matches(byte[] data, int offset, byte[] needle) {
-        for (int i = 0; i < needle.length; i++) {
-            if (offset + i >= data.length) {
-                return false;
-            }
-            if (data[offset + i] != needle[i]) {
-                return false;
-            }
-        }
-        return true;
     }
 
 }
