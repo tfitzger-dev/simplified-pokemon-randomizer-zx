@@ -46,7 +46,7 @@ public abstract class Abstract3DSRomHandler extends AbstractRomHandler {
     private String loadedFN;
 
     public Abstract3DSRomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+        super(random);
     }
 
     @Override
@@ -98,23 +98,7 @@ public abstract class Abstract3DSRomHandler extends AbstractRomHandler {
         return true;
     }
 
-    @Override
-    public boolean saveRomDirectory(String filename) {
-        try {
-            savingROM();
-            baseRom.saveAsLayeredFS(filename);
-        } catch (IOException e) {
-            throw new RandomizerIOException(e);
-        }
-        return true;
-    }
-
     protected abstract boolean isGameUpdateSupported(int version);
-
-    @Override
-    public boolean hasGameUpdateLoaded() {
-        return gameUpdate != null;
-    }
 
     @Override
     public boolean loadGameUpdate(String filename) {
@@ -136,23 +120,7 @@ public abstract class Abstract3DSRomHandler extends AbstractRomHandler {
         return true;
     }
 
-    @Override
-    public void removeGameUpdate() {
-        gameUpdate = null;
-        this.loadedROM(baseRom.getProductCode(), baseRom.getTitleId());
-    }
-
     protected abstract String getGameVersion();
-
-    @Override
-    public String getGameUpdateVersion() {
-        return getGameVersion();
-    }
-
-    @Override
-    public void printRomDiagnostics(PrintStream logStream) {
-        baseRom.printRomDiagnostics(logStream, gameUpdate);
-    }
 
     public void closeInnerRom() throws IOException {
         baseRom.closeROM();

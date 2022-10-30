@@ -42,7 +42,6 @@ import com.dabomstew.pkrandom.pokemon.Pokemon;
 import com.dabomstew.pkrandom.romhandlers.Gen1RomHandler;
 import com.dabomstew.pkrandom.romhandlers.Gen2RomHandler;
 import com.dabomstew.pkrandom.romhandlers.Gen3RomHandler;
-import com.dabomstew.pkrandom.romhandlers.Gen5RomHandler;
 import com.dabomstew.pkrandom.romhandlers.RomHandler;
 
 public class Settings {
@@ -904,13 +903,6 @@ public class Settings {
     public TweakForROMFeedback tweakForRom(RomHandler rh) {
 
         TweakForROMFeedback feedback = new TweakForROMFeedback();
-
-        // move update check
-        if (this.isUpdateMovesLegacy() && rh instanceof Gen5RomHandler) {
-            // don't actually update moves
-            this.setUpdateMovesLegacy(false);
-            this.setUpdateMoves(false);
-        }
 
         // starters
         List<Pokemon> romPokemon = rh.getPokemonInclFormes();

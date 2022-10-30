@@ -24,11 +24,7 @@ public class CliRandomizer {
         RomHandler.Factory[] checkHandlers = new RomHandler.Factory[] {
                 new Gen1RomHandler.Factory(),
                 new Gen2RomHandler.Factory(),
-                new Gen3RomHandler.Factory(),
-                new Gen4RomHandler.Factory(),
-                new Gen5RomHandler.Factory(),
-                new Gen6RomHandler.Factory(),
-                new Gen7RomHandler.Factory()
+                new Gen3RomHandler.Factory()
         };
 
         Settings settings;
@@ -236,10 +232,11 @@ public class CliRandomizer {
         String randomizedDir = baseDir + "\\randomized\\";
 
         Arrays.stream(sourceDir.listFiles()).forEach(genDir -> {
+            int iters = (int) Math.max(Math.ceil(Integer.parseInt(args[0]) / genDir.listFiles().length / settingsDir.listFiles().length), 1);
             Arrays.stream(genDir.listFiles()).forEach(srcFile -> {
                 Arrays.stream(settingsDir.listFiles()).forEach(settings -> {
-                    IntStream.range(0, 20).forEach((idx) -> {
-                        System.out.print(String.format("[%s] %s - %s #%d: ", genDir.getName(), srcFile.getName(), settings.getName().split("\\.")[0], idx));
+                    IntStream.range(0, iters).forEach((idx) -> {
+                        System.out.print(String.format("[%s] %s - %s (%d/%d): ", genDir.getName(), srcFile.getName(), settings.getName().split("\\.")[0], idx + 1, iters));
                         invoke(new String[]{"-s", settings.getAbsolutePath(), "-i", srcFile.getAbsolutePath(), "-o", randomizedDir + srcFile.getName()});
                     });
                 });

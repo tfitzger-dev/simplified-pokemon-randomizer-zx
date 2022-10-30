@@ -30,8 +30,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Random;
 
 import com.dabomstew.pkrandom.FileFunctions;
@@ -45,7 +43,7 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
     private String loadedFN;
 
     public AbstractGBRomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+        super(random);
     }
 
     @Override
@@ -84,39 +82,9 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
     }
 
     @Override
-    public boolean saveRomDirectory(String filename) {
-        // do nothing, because GB games don't really have a concept of a filesystem
-        return true;
-    }
-
-    @Override
-    public boolean hasGameUpdateLoaded() {
-        return false;
-    }
-
-    @Override
     public boolean loadGameUpdate(String filename) {
         // do nothing, as GB games don't have external game updates
         return true;
-    }
-
-    @Override
-    public void removeGameUpdate() {
-        // do nothing, as GB games don't have external game updates
-    }
-
-    @Override
-    public String getGameUpdateVersion() {
-        // do nothing, as DS games don't have external game updates
-        return null;
-    }
-
-    @Override
-    public void printRomDiagnostics(PrintStream logStream) {
-        Path p = Paths.get(loadedFN);
-        logStream.println("File name: " + p.getFileName().toString());
-        long crc = FileFunctions.getCRC32(originalRom);
-        logStream.println("Original ROM CRC32: " + String.format("%08X", crc));
     }
 
     @Override

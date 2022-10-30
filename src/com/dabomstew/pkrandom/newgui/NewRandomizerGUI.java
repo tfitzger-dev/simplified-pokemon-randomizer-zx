@@ -299,7 +299,7 @@ public class NewRandomizerGUI {
     private JCheckBox tpBetterMovesetsCheckBox;
     private JCheckBox paEnsureTwoAbilitiesCheckbox;
     private JCheckBox miscUpdateRotomFormeTypingCheckBox;
-
+/*
     private static JFrame frame;
 
     private static String launcherInput = "";
@@ -4008,5 +4008,5 @@ public class NewRandomizerGUI {
                 frame.setVisible(true);
             });
         }
-    }
+    }*/
 }
