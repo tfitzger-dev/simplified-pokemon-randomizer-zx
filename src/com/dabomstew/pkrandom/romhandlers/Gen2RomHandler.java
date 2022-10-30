@@ -1442,11 +1442,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
     }
 
     @Override
-    public List<Pokemon> bannedForStaticPokemon() {
-        return Collections.singletonList(pokes[Species.unown]); // Unown banned
-    }
-
-    @Override
     public boolean hasMainGameLegendaries() {
         return false;
     }
@@ -1691,16 +1686,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         } else if (tweak == MiscTweak.UPDATE_TYPE_EFFECTIVENESS) {
             updateTypeEffectiveness();
         }
-    }
-
-    @Override
-    public List<Pokemon> getAbilityDependentFormes() {
-        return null;
-    }
-
-    @Override
-    public List<Pokemon> getBannedFormesForPlayerPokemon() {
-        return null;
     }
 
     private void randomizeCatchingTutorial() {

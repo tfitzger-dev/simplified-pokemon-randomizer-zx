@@ -1725,16 +1725,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     }
 
     @Override
-    public List<Pokemon> bannedForWildEncounters() {
-        if (romEntry.romType == Gen3Constants.RomType_FRLG) {
-            // Ban Unown in FRLG because the game crashes if it is encountered outside of Tanoby Ruins.
-            // See GenerateWildMon in wild_encounter.c in pokefirered
-            return Collections.singletonList(pokes[Species.unown]);
-        }
-        return new ArrayList<>();
-    }
-
-    @Override
     public List<Trainer> getTrainers() {
         int baseOffset = romEntry.getValue("TrainerData");
         int amount = romEntry.getValue("TrainerCount");
@@ -3109,16 +3099,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         } else if (tweak == MiscTweak.UPDATE_TYPE_EFFECTIVENESS) {
             updateTypeEffectiveness();
         }
-    }
-
-    @Override
-    public List<Pokemon> getAbilityDependentFormes() {
-        return null;
-    }
-
-    @Override
-    public List<Pokemon> getBannedFormesForPlayerPokemon() {
-        return null;
     }
 
     private void randomizeCatchingTutorial() {

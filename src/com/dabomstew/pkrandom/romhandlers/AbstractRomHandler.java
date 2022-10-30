@@ -143,7 +143,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean useTimeOfDay = settings.isUseTimeBasedEncounters();
         boolean noLegendaries = settings.isBlockWildLegendaries();
         boolean allowAltFormes = settings.isAllowWildAltFormes();
-        boolean abilitiesAreRandomized = settings.getAbilitiesMod() == Settings.AbilitiesMod.RANDOMIZE;
 
         List<EncounterSet> currentEncounters = this.getEncounters(useTimeOfDay);
         checkPokemonRestrictions();
@@ -266,7 +265,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean distributionSetting = settings.getTrainersMod() == Settings.TrainersMod.DISTRIBUTED;
         boolean mainPlaythroughSetting = settings.getTrainersMod() == Settings.TrainersMod.MAINPLAYTHROUGH;
         boolean shinyChance = settings.isShinyChance();
-        boolean abilitiesAreRandomized = settings.getAbilitiesMod() == Settings.AbilitiesMod.RANDOMIZE;
 
         checkPokemonRestrictions();
 
@@ -404,8 +402,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                                 typeForTrainer,
                                 noLegendaries,
                                 wgAllowed,
-                                distributionSetting || (mainPlaythroughSetting && mainPlaythroughTrainers.contains(t.index)),
-                        abilitiesAreRandomized
+                                distributionSetting || (mainPlaythroughSetting && mainPlaythroughTrainers.contains(t.index))
                 );
 
                 // Chosen Pokemon is locked in past here
@@ -465,7 +462,6 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     @Override
     public void randomizeBasicTwoEvosStarters(Settings settings) {
-        boolean abilitiesUnchanged = settings.getAbilitiesMod() == Settings.AbilitiesMod.UNCHANGED;
         boolean allowAltFormes = settings.isAllowStarterAltFormes();
 
         int starterCount = starterCount();
@@ -934,8 +930,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     private Pokemon pickTrainerPokeReplacement(Pokemon current, boolean usePowerLevels, Type type,
                                                boolean noLegendaries, boolean wonderGuardAllowed,
-                                               boolean usePlacementHistory,
-                                               boolean abilitiesAreRandomized) {
+                                               boolean usePlacementHistory) {
         List<Pokemon> pickFrom;
         List<Pokemon> withoutBannedPokemon;
 
@@ -1123,16 +1118,6 @@ public abstract class AbstractRomHandler implements RomHandler {
     public boolean hasTimeBasedEncounters() {
         // DEFAULT: no
         return false;
-    }
-
-    @Override
-    public List<Pokemon> bannedForWildEncounters() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Pokemon> bannedForStaticPokemon() {
-        return new ArrayList<>();
     }
 
     @Override

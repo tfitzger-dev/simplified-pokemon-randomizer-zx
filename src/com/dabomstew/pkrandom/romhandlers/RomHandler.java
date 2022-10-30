@@ -148,8 +148,6 @@ public interface RomHandler {
 
     boolean hasTimeBasedEncounters();
 
-    List<Pokemon> bannedForWildEncounters();
-
     // ===============
     // Trainer Pokemon
     // ===============
@@ -192,8 +190,6 @@ public interface RomHandler {
     void randomizeStaticPokemon(Settings settings);
 
     boolean canChangeStaticPokemon();
-
-    List<Pokemon> bannedForStaticPokemon();
 
     boolean hasMainGameLegendaries();
 
@@ -300,9 +296,5 @@ public interface RomHandler {
     // ==========================
     // Misc forme-related methods
     // ==========================
-
-    List<Pokemon> getAbilityDependentFormes();
-
-    List<Pokemon> getBannedFormesForPlayerPokemon();
 
 }
