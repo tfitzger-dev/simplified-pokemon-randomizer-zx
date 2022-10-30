@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 public class CliRandomizer {
 
@@ -92,7 +93,7 @@ public class CliRandomizer {
 
                     String filename = fh.getAbsolutePath();
 
-                    Randomizer randomizer = new Randomizer(settings, romHandler, bundle, saveAsDirectory);
+                    Randomizer randomizer = new Randomizer(settings, romHandler);
                     randomizer.randomize(filename, verboseLog);
                     verboseLog.close();
                     byte[] out = baos.toByteArray();
@@ -226,5 +227,26 @@ public class CliRandomizer {
         System.err.println("Usage: java [-Xmx4096M] -jar PokeRandoZX.jar cli -s <path to settings file> " +
                 "-i <path to source ROM> -o <path for new ROM> [-d][-u <path to 3DS game update>][-l]");
         System.err.println("-d: Save 3DS game as directory (LayeredFS)");
+    }
+
+    public static void main(String[] args) {
+        String baseDir = "D:\\pkmn";
+        File settingsDir = new File(baseDir + "\\settings");
+        File sourceDir = new File(baseDir + "\\source");
+        String randomizedDir = baseDir + "\\randomized\\";
+
+        Arrays.stream(sourceDir.listFiles()).forEach(genDir -> {
+            Arrays.stream(genDir.listFiles()).forEach(srcFile -> {
+                Arrays.stream(settingsDir.listFiles()).forEach(settings -> {
+                    IntStream.range(0, 20).forEach((idx) -> {
+                        System.out.print(String.format("[%s] %s - %s #%d: ", genDir.getName(), srcFile.getName(), settings.getName().split("\\.")[0], idx));
+                        invoke(new String[]{"-s", settings.getAbsolutePath(), "-i", srcFile.getAbsolutePath(), "-o", randomizedDir + srcFile.getName()});
+                    });
+                });
+
+            });
+
+        });
+
     }
 }
