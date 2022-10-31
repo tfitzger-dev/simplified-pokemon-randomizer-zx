@@ -220,8 +220,6 @@ public interface RomHandler {
     // Items
     // =====
 
-    ItemList getNonBadItems();
-
     // ===========
     // Field Items
     // ===========

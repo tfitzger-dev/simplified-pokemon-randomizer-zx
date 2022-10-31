@@ -261,7 +261,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     private List<Pokemon> pokemonList;
     private RomEntry romEntry;
     private Move[] moves;
-    private String[] itemNames;
     private String[] mapNames;
     private SubMap[] maps;
     private long actualCRC32;
@@ -288,7 +287,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         loadPokemonStats();
         pokemonList = Arrays.asList(pokes);
         loadMoves();
-        loadItemNames();
         preloadMaps();
         loadMapNames();
         actualCRC32 = FileFunctions.getCRC32(rom);
@@ -1271,9 +1269,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         }
 
         public int getLevel(byte[] rom, int i) {
-            if (levelOffsets.length <= i) {
-                return 1;
-            }
             return rom[levelOffsets[i]];
         }
 
@@ -1298,9 +1293,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
 
     @Override
     public boolean setStaticPokemon(List<StaticEncounter> staticPokemon) {
-        if (romEntry.getValue("StaticPokemonSupport") == 0) {
-            return false;
-        }
         for (int i = 0; i < romEntry.staticPokemon.size(); i++) {
             StaticEncounter se = staticPokemon.get(i);
             StaticPokemon sp = romEntry.staticPokemon.get(i);
@@ -1488,43 +1480,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         rom[romEntry.getValue("IntroPokemonOffset")] = (byte) introPokemon;
         rom[romEntry.getValue("IntroCryOffset")] = (byte) introPokemon;
 
-    }
-
-    @Override
-    public ItemList getNonBadItems() {
-        // Gen 1 has no bad items Kappa
-        return Gen1Constants.allowedItems;
-    }
-
-    private void loadItemNames() {
-        itemNames = new String[256];
-        itemNames[0] = "glitch";
-        // trying to emulate pretty much what the game does here
-        // normal items
-        int origOffset = romEntry.getValue("ItemNamesOffset");
-        int itemNameOffset = origOffset;
-        for (int index = 1; index <= 0x100; index++) {
-            if (itemNameOffset / GBConstants.bankSize > origOffset / GBConstants.bankSize) {
-                // the game would continue making its merry way into VRAM here,
-                // but we don't have VRAM to simulate.
-                // just give up.
-                break;
-            }
-            int startOfText = itemNameOffset;
-            while ((rom[itemNameOffset] & 0xFF) != GBConstants.stringTerminator) {
-                itemNameOffset++;
-            }
-            itemNameOffset++;
-            itemNames[index % 256] = readFixedLengthString(startOfText, 20);
-        }
-        // hms override
-        for (int index = Gen1Constants.hmsStartIndex; index < Gen1Constants.tmsStartIndex; index++) {
-            itemNames[index] = String.format("HM%02d", index - Gen1Constants.hmsStartIndex + 1);
-        }
-        // tms override
-        for (int index = Gen1Constants.tmsStartIndex; index < 0x100; index++) {
-            itemNames[index] = String.format("TM%02d", index - Gen1Constants.tmsStartIndex + 1);
-        }
     }
 
     private static class SubMap {
