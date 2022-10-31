@@ -81,12 +81,14 @@ public class Gen1Constants {
     }
 
     public static byte typeToByte(Type type) {
+        byte out = (byte) 0;
         for (int i = 0; i < typeTable.length; i++) {
             if (typeTable[i] == type) {
-                return (byte) i;
+                out =  (byte) i;
+                break;
             }
         }
-        return (byte) 0;
+        return out;
     }
 
     public static void tagTrainersUniversal(List<Trainer> trs) {

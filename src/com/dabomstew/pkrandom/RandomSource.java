@@ -40,40 +40,8 @@ public class RandomSource {
         cosmeticSource.setSeed(seed);
     }
 
-    public static double random() {
-        return source.nextDouble();
-    }
-
     public static int nextInt(int size) {
         return source.nextInt(size);
-    }
-
-    public static void nextBytes(byte[] bytes) {
-        source.nextBytes(bytes);
-    }
-
-    public static int nextInt() {
-        return source.nextInt();
-    }
-
-    public static long nextLong() {
-        return source.nextLong();
-    }
-
-    public static boolean nextBoolean() {
-        return source.nextBoolean();
-    }
-
-    public static float nextFloat() {
-        return source.nextFloat();
-    }
-
-    public static double nextDouble() {
-        return source.nextDouble();
-    }
-
-    public static synchronized double nextGaussian() {
-        return source.nextGaussian();
     }
 
     public static long pickSeed() {
@@ -101,44 +69,10 @@ public class RandomSource {
             RandomSource.seed(seed);
         }
 
-        @Override
-        public void nextBytes(byte[] bytes) {
-            RandomSource.nextBytes(bytes);
-        }
-
-        @Override
-        public int nextInt() {
-            return RandomSource.nextInt();
-        }
 
         @Override
         public int nextInt(int n) {
             return RandomSource.nextInt(n);
-        }
-
-        @Override
-        public long nextLong() {
-            return RandomSource.nextLong();
-        }
-
-        @Override
-        public boolean nextBoolean() {
-            return RandomSource.nextBoolean();
-        }
-
-        @Override
-        public float nextFloat() {
-            return RandomSource.nextFloat();
-        }
-
-        @Override
-        public double nextDouble() {
-            return RandomSource.nextDouble();
-        }
-
-        @Override
-        public synchronized double nextGaussian() {
-            return RandomSource.nextGaussian();
         }
 
     }

@@ -25,16 +25,10 @@ package com.dabomstew.pkrandom;
 /*----------------------------------------------------------------------------*/
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import com.dabomstew.pkrandom.pokemon.Evolution;
 import com.dabomstew.pkrandom.pokemon.MoveLearnt;
-import com.dabomstew.pkrandom.pokemon.Pokemon;
-import com.dabomstew.pkrandom.romhandlers.RomHandler;
 
 public class RomFunctions {
 
@@ -46,16 +40,9 @@ public class RomFunctions {
      * @param level Level to get at.
      * @return Array with move indices.
      */
+
     public static int[] getMovesAtLevel(int pkmn, Map<Integer, List<MoveLearnt>> movesets, int level) {
-        return getMovesAtLevel(pkmn, movesets, level, 0);
-    }
-
-    public static int[] getMovesAtLevel(int pkmn, Map<Integer, List<MoveLearnt>> movesets, int level, int emptyValue) {
         int[] curMoves = new int[4];
-
-        if (emptyValue != 0) {
-            Arrays.fill(curMoves, emptyValue);
-        }
 
         int moveCount = 0;
         List<MoveLearnt> movepool = movesets.get(pkmn);
