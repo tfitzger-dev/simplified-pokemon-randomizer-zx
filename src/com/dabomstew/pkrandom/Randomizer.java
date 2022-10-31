@@ -55,9 +55,9 @@ public class Randomizer {
 
         int checkValue = 0;
 
-        log.println("Randomizer Version: " + Version.VERSION_STRING);
+        log.println("Randomizer Version: EXTERMINATE");
         log.println("Random Seed: " + seed);
-        log.println("Settings String: " + Version.VERSION + settings.toString());
+        log.println("Settings String: " + "Version.VERSION" + settings.toString());
         log.println();
 
         // All possible changes that can be logged

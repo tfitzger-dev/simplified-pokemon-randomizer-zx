@@ -46,7 +46,7 @@ import com.dabomstew.pkrandom.romhandlers.RomHandler;
 
 public class Settings {
 
-    public static final int VERSION = Version.VERSION;
+    public static final int VERSION = 321;
 
     public static final int LENGTH_OF_SETTINGS_DATA = 51;
 
@@ -348,11 +348,6 @@ public class Settings {
         byte[] buffer = FileFunctions.readFullyIntoBuffer(in, length);
         String settings = new String(buffer, "UTF-8");
         boolean oldUpdate = false;
-
-        if (version < VERSION) {
-            oldUpdate = true;
-            settings = new SettingsUpdater().update(version, settings);
-        }
 
         Settings settingsObj = fromString(settings);
         settingsObj.setUpdatedFromOldVersion(oldUpdate);
