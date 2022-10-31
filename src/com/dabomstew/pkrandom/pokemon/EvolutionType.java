@@ -67,7 +67,6 @@ public enum EvolutionType {
     LEVEL_SNOWY(-1, -1, -1, -1, -1, -1, 39),
     LEVEL_DUSK(-1, -1, -1, -1, -1, -1, 40),
     LEVEL_NIGHT_ULTRA(-1, -1, -1, -1, -1, -1, 41),
-    STONE_ULTRA(-1, -1, -1, -1, -1, -1, 42),
     NONE(-1, -1, -1, -1, -1, -1, -1);
     /* @formatter:on */
 
@@ -106,7 +105,4 @@ public enum EvolutionType {
                 || (this == LEVEL_SNOWY) || (this == LEVEL_DUSK) || (this == LEVEL_NIGHT_ULTRA);
     }
 
-    public boolean skipSplitEvo() {
-        return (this == LEVEL_HIGH_BEAUTY) || (this == LEVEL_NIGHT_ULTRA) || (this == STONE_ULTRA);
-    }
 }

@@ -122,17 +122,7 @@ public class CliRandomizer {
                 updateFilePath,
                 saveLog
         );
-        return 0;
-    }
-
-    private static void printWarning(String text) {
-        System.err.println("WARNING: " + text);
-    }
-
-    private static void printUsage() {
-        System.err.println("Usage: java [-Xmx4096M] -jar PokeRandoZX.jar cli -s <path to settings file> " +
-                "-i <path to source ROM> -o <path for new ROM> [-d][-u <path to 3DS game update>][-l]");
-        System.err.println("-d: Save 3DS game as directory (LayeredFS)");
+        return processResult ? 0 : 1;
     }
 
     public static void main(String[] args) {
@@ -141,19 +131,19 @@ public class CliRandomizer {
         File sourceDir = new File(baseDir + "\\source");
         String randomizedDir = baseDir + "\\randomized\\";
 
-        Arrays.stream(sourceDir.listFiles()).forEach(genDir -> {
+        int failures =
+        Arrays.stream(sourceDir.listFiles()).mapToInt(genDir -> {
             int iters = (int) Math.max(Math.ceil(Integer.parseInt(args[0]) / genDir.listFiles().length / settingsDir.listFiles().length), 1);
-            Arrays.stream(genDir.listFiles()).forEach(srcFile -> {
-                Arrays.stream(settingsDir.listFiles()).forEach(settings -> {
-                    IntStream.range(0, iters).forEach((idx) -> {
+            return Arrays.stream(genDir.listFiles()).mapToInt(srcFile -> {
+                return Arrays.stream(settingsDir.listFiles()).mapToInt( settings -> {
+                    return IntStream.range(0, iters).map( idx ->{
                         System.out.print(String.format("[%s] %s - %s (%d/%d): ", genDir.getName(), srcFile.getName(), settings.getName().split("\\.")[0], idx + 1, iters));
-                        invoke(new String[]{"-s", settings.getAbsolutePath(), "-i", srcFile.getAbsolutePath(), "-o", randomizedDir + srcFile.getName()});
-                    });
-                });
+                        return invoke(new String[]{"-s", settings.getAbsolutePath(), "-i", srcFile.getAbsolutePath(), "-o", randomizedDir + srcFile.getName()});
+                    }).sum();
+                }).sum();
+            }).sum();
 
-            });
-
-        });
-
+        }).sum();
+        System.out.println("Count of Total Failures: " + failures);
     }
 }

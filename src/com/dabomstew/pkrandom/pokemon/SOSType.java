@@ -24,5 +24,4 @@ package com.dabomstew.pkrandom.pokemon;
 /*----------------------------------------------------------------------------*/
 
 public enum SOSType {
-    GENERIC, RAIN, HAIL, SAND
 }

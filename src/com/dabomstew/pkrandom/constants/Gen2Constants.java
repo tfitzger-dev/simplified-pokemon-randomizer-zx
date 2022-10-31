@@ -33,13 +33,6 @@ import com.dabomstew.pkrandom.pokemon.Trainer;
 import com.dabomstew.pkrandom.pokemon.Type;
 
 public class Gen2Constants {
-
-    public static final int vietCrystalCheckOffset = 0x63;
-
-    public static final byte vietCrystalCheckValue = (byte) 0xF5;
-
-    public static final String vietCrystalROMName = "Pokemon VietCrystal";
-
     public static final int pokemonCount = 251, moveCount = 251;
 
     public static final int baseStatsEntrySize = 0x20;
@@ -49,24 +42,13 @@ public class Gen2Constants {
     public static final int bsHPOffset = 1, bsAttackOffset = 2, bsDefenseOffset = 3, bsSpeedOffset = 4,
             bsSpAtkOffset = 5, bsSpDefOffset = 6, bsPrimaryTypeOffset = 7, bsSecondaryTypeOffset = 8,
             bsCatchRateOffset = 9, bsCommonHeldItemOffset = 11, bsRareHeldItemOffset = 12, bsPicDimensionsOffset = 17,
-            bsGrowthCurveOffset = 22, bsTMHMCompatOffset = 24, bsMTCompatOffset = 31;
+            bsGrowthCurveOffset = 22;
 
-    public static final String[] starterNames = new String[] { "CYNDAQUIL", "TOTODILE", "CHIKORITA" };
-
-    public static final int fishingGroupCount = 12, pokesPerFishingGroup = 11, fishingGroupEntryLength = 3,
-            timeSpecificFishingGroupCount = 11, pokesPerTSFishingGroup = 4;
+    public static final int fishingGroupCount = 12, pokesPerFishingGroup = 11, fishingGroupEntryLength = 3;
 
     public static final int landEncounterSlots = 7, seaEncounterSlots = 3;
 
     public static final int oddEggPokemonCount = 14;
-
-    public static final int tmCount = 50, hmCount = 7;
-
-    public static final String mtMenuCancelString = "CANCEL";
-
-    public static final byte mtMenuInitByte = (byte) 0x80;
-
-    public static final int maxTrainerNameLength = 17;
 
     public static final int fleeingSetTwoOffset = 0xE, fleeingSetThreeOffset = 0x17;
 
@@ -94,28 +76,8 @@ public class Gen2Constants {
     public static final List<Integer> increasedCritMoves = Arrays.asList(Moves.karateChop, Moves.razorWind, Moves.razorLeaf,
             Moves.crabhammer, Moves.slash, Moves.aeroblast, Moves.crossChop);
 
-    public static final List<Integer> requiredFieldTMs = Arrays.asList(4, 20, 22, 26, 28, 34, 35, 39,
-            40, 43, 44, 46);
-
-    public static final List<Integer> fieldMoves = Arrays.asList(
-            Moves.cut, Moves.fly, Moves.surf, Moves.strength, Moves.flash, Moves.dig, Moves.teleport,
-            Moves.whirlpool, Moves.waterfall, Moves.rockSmash, Moves.headbutt, Moves.sweetScent);
-
-    public static final List<Integer> earlyRequiredHMMoves = Collections.singletonList(Moves.cut);
-
     // ban thief because trainers are broken with it (items are not returned).
     // ban transform because of Transform assumption glitch
-    public static final List<Integer> bannedLevelupMoves = Arrays.asList(Moves.transform, Moves.thief);
-
-    public static final List<Integer> brokenMoves = Arrays.asList(
-            Moves.sonicBoom, Moves.dragonRage, Moves.hornDrill, Moves.fissure, Moves.guillotine);
-
-    public static final List<Integer> illegalVietCrystalMoves = Arrays.asList(
-            Moves.protect, Moves.rest, Moves.spikeCannon, Moves.detect);
-
-    public static final int tmBlockOneIndex = Gen2Items.tm01, tmBlockOneSize = 4,
-            tmBlockTwoIndex = Gen2Items.tm05, tmBlockTwoSize = 24,
-            tmBlockThreeIndex = Gen2Items.tm29, tmBlockThreeSize = 22;
 
     public static final int priorityHitEffectIndex = 0x67, protectEffectIndex = 0x6F, endureEffectIndex = 0x74,
             forceSwitchEffectIndex = 0x1C,counterEffectIndex = 0x59, mirrorCoatEffectIndex = 0x90;
@@ -186,49 +148,6 @@ public class Gen2Constants {
         default:
             return 0; // normal by default
         }
-    }
-
-    public static ItemList allowedItems;
-
-    public static ItemList nonBadItems;
-
-    static {
-        setupAllowedItems();
-    }
-
-    private static void setupAllowedItems() {
-        allowedItems = new ItemList(Gen2Items.hm07); // 250-255 are junk and cancel
-        // Assorted key items
-        allowedItems.banSingles(Gen2Items.bicycle, Gen2Items.coinCase, Gen2Items.itemfinder, Gen2Items.oldRod,
-                Gen2Items.goodRod, Gen2Items.superRod, Gen2Items.gsBall, Gen2Items.blueCard, Gen2Items.basementKey,
-                Gen2Items.pass, Gen2Items.squirtBottle, Gen2Items.rainbowWing);
-        allowedItems.banRange(Gen2Items.redScale, 6);
-        allowedItems.banRange(Gen2Items.cardKey, 4);
-        // HMs
-        allowedItems.banRange(Gen2Items.hm01, 7);
-        // Unused items (Teru-Samas and dummy TMs)
-        allowedItems.banSingles(Gen2Items.terusama6, Gen2Items.terusama25, Gen2Items.terusama45,
-                Gen2Items.terusama50, Gen2Items.terusama56, Gen2Items.terusama90, Gen2Items.terusama100,
-                Gen2Items.terusama120, Gen2Items.terusama135, Gen2Items.terusama136, Gen2Items.terusama137,
-                Gen2Items.terusama141, Gen2Items.terusama142, Gen2Items.terusama145, Gen2Items.terusama147,
-                Gen2Items.terusama148, Gen2Items.terusama149, Gen2Items.terusama153, Gen2Items.terusama154,
-                Gen2Items.terusama155, Gen2Items.terusama162, Gen2Items.terusama171, Gen2Items.terusama176,
-                Gen2Items.terusama179, Gen2Items.terusama190, Gen2Items.tm04Unused, Gen2Items.tm28Unused);
-        // Real TMs
-        allowedItems.tmRange(tmBlockOneIndex, tmBlockOneSize);
-        allowedItems.tmRange(tmBlockTwoIndex, tmBlockTwoSize);
-        allowedItems.tmRange(tmBlockThreeIndex, tmBlockThreeSize);
-
-        // non-bad items
-        // ban specific pokemon hold items, berries, apricorns, mail
-        nonBadItems = allowedItems.copy();
-        nonBadItems.banSingles(Gen2Items.luckyPunch, Gen2Items.metalPowder, Gen2Items.silverLeaf,
-                Gen2Items.goldLeaf, Gen2Items.redApricorn, Gen2Items.bluApricorn, Gen2Items.whtApricorn,
-                Gen2Items.blkApricorn, Gen2Items.pnkApricorn, Gen2Items.stick, Gen2Items.thickClub,
-                Gen2Items.flowerMail, Gen2Items.lightBall, Gen2Items.berry, Gen2Items.brickPiece);
-        nonBadItems.banRange(Gen2Items.ylwApricorn, 2);
-        nonBadItems.banRange(Gen2Items.normalBox, 2);
-        nonBadItems.banRange(Gen2Items.surfMail, 9);
     }
 
     public static void universalTrainerTags(List<Trainer> allTrainers) {

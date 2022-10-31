@@ -37,8 +37,6 @@ import java.nio.ByteBuffer;
 import java.util.Base64;
 import java.util.zip.CRC32;
 
-import com.dabomstew.pkrandom.exceptions.InvalidSupplementFilesException;
-
 public class Utils {
 
     public static void validateRomFile(File fh) throws InvalidROMException {
@@ -84,33 +82,6 @@ public class Utils {
             if (!FileFunctions.configExists(filename)) {
                 throw new FileNotFoundException(filename);
             }
-        }
-    }
-
-    public static void validatePresetSupplementFiles(String config, CustomNamesSet customNames)
-            throws InvalidSupplementFilesException {
-        byte[] data = Base64.getDecoder().decode(config);
-
-        if (data.length < Settings.LENGTH_OF_SETTINGS_DATA + 9) {
-            throw new InvalidSupplementFilesException(InvalidSupplementFilesException.Type.UNKNOWN,
-                    "The preset config is too short to be valid");
-        }
-
-        // Check the checksum
-        ByteBuffer buf = ByteBuffer.allocate(4).put(data, data.length - 8, 4);
-        buf.rewind();
-        int crc = buf.getInt();
-
-        CRC32 checksum = new CRC32();
-        checksum.update(data, 0, data.length - 8);
-        if ((int) checksum.getValue() != crc) {
-            throw new IllegalArgumentException("Checksum failure.");
-        }
-
-        // Check the trainerclass & trainernames & nicknames crc
-        if (customNames == null && !FileFunctions.checkOtherCRC(data, 16, 4, SysConstants.customNamesFile, data.length - 4)) {
-            throw new InvalidSupplementFilesException(InvalidSupplementFilesException.Type.CUSTOM_NAMES,
-                    "Can't use this preset because you have a different set " + "of custom names to the creator.");
         }
     }
 

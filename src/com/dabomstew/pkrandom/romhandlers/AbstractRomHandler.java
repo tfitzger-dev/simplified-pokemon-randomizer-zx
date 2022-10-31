@@ -46,7 +46,6 @@ public abstract class AbstractRomHandler implements RomHandler {
     private Map<Pokemon, Integer> placementHistory = new HashMap<>();
     private int fullyEvolvedRandomSeed;
     boolean isORAS = false;
-    int perfectAccuracy = 100;
 
     /* Constructor */
 

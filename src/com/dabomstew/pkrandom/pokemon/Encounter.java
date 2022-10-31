@@ -29,11 +29,6 @@ public class Encounter {
     public int level;
     public int maxLevel;
     public Pokemon pokemon;
-    public int formeNumber;
-
-    // Used only for Gen 7's SOS mechanic
-    public boolean isSOS;
-    public SOSType sosType;
 
     public String toString() {
         if (pokemon == null) {

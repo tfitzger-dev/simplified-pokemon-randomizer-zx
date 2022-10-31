@@ -25,10 +25,8 @@ package com.dabomstew.pkrandom.constants;
 /*----------------------------------------------------------------------------*/
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import com.dabomstew.pkrandom.pokemon.ItemList;
 import com.dabomstew.pkrandom.pokemon.Trainer;
 import com.dabomstew.pkrandom.pokemon.Type;
 
@@ -36,10 +34,17 @@ public class Gen1Constants {
 
     public static final int baseStatsEntrySize = 0x1C;
 
-    public static final int bsHPOffset = 1, bsAttackOffset = 2, bsDefenseOffset = 3, bsSpeedOffset = 4,
-            bsSpecialOffset = 5, bsPrimaryTypeOffset = 6, bsSecondaryTypeOffset = 7, bsCatchRateOffset = 8,
-            bsExpYieldOffset = 9, bsFrontSpriteOffset = 11, bsLevel1MovesOffset = 15, bsGrowthCurveOffset = 19,
-            bsTMHMCompatOffset = 20;
+    public static final int bsHPOffset = 1;
+    public static final int bsAttackOffset = 2;
+    public static final int bsDefenseOffset = 3;
+    public static final int bsSpeedOffset = 4;
+    public static final int bsSpecialOffset = 5;
+    public static final int bsPrimaryTypeOffset = 6;
+    public static final int bsSecondaryTypeOffset = 7;
+    public static final int bsCatchRateOffset = 8;
+    public static final int bsExpYieldOffset = 9;
+    public static final int bsFrontSpriteOffset = 11;
+    public static final int bsGrowthCurveOffset = 19;
 
     public static final int encounterTableEnd = 0xFFFF, encounterTableSize = 10, yellowSuperRodTableSize = 4;
 
@@ -47,53 +52,11 @@ public class Gen1Constants {
 
     public static final int champRivalOffsetFromGymLeaderMoves = 0x44;
 
-    public static final int tmCount = 50, hmCount = 5;
 
-    public static final int[] gymLeaderTMs = new int[] { 34, 11, 24, 21, 6, 46, 38, 27 };
 
     public static final int[] tclassesCounts = new int[] { 21, 47 };
 
-    public static final List<Integer> singularTrainers = Arrays.asList(28, 32, 33, 34, 35, 36, 37, 38, 39, 43, 45, 46);
-
-    public static final List<Integer> bannedMovesWithXAccBanned = Arrays.asList(
-            Moves.sonicBoom, Moves.dragonRage, Moves.spore);
-
-    public static final List<Integer> bannedMovesWithoutXAccBanned = Arrays.asList(
-            Moves.sonicBoom, Moves.dragonRage, Moves.spore, Moves.hornDrill, Moves.fissure, Moves.guillotine);
-
-    // ban transform because of Transform assumption glitch
-    public static final List<Integer> bannedLevelupMoves = Collections.singletonList(Moves.transform);
-
-    public static final List<Integer> fieldMoves = Arrays.asList(
-            Moves.cut, Moves.fly, Moves.surf, Moves.strength, Moves.flash, Moves.dig, Moves.teleport);
-
-    public static final int damagePoison20PercentEffect = 2, damageAbsorbEffect = 3, damageBurn10PercentEffect = 4,
-            damageFreeze10PercentEffect = 5, damageParalyze10PercentEffect = 6, dreamEaterEffect = 8,
-            noDamageAtkPlusOneEffect = 10, noDamageDefPlusOneEffect = 11, noDamageSpecialPlusOneEffect = 13,
-            noDamageEvasionPlusOneEffect = 15, noDamageAtkMinusOneEffect = 18, noDamageDefMinusOneEffect = 19,
-            noDamageSpeMinusOneEffect = 20, noDamageAccuracyMinusOneEffect = 22, flinch10PercentEffect = 31,
-            noDamageSleepEffect = 32, damagePoison40PercentEffect = 33, damageBurn30PercentEffect = 34,
-            damageFreeze30PercentEffect = 35, damageParalyze30PercentEffect = 36, flinch30PercentEffect = 37,
-            chargeEffect = 39, flyEffect = 43, damageRecoilEffect = 48, noDamageConfusionEffect = 49,
-            noDamageAtkPlusTwoEffect = 50, noDamageDefPlusTwoEffect = 51, noDamageSpePlusTwoEffect = 52,
-            noDamageSpecialPlusTwoEffect = 53, noDamageDefMinusTwoEffect = 59, noDamagePoisonEffect = 66,
-            noDamageParalyzeEffect = 67, damageAtkMinusOneEffect = 68, damageDefMinusOneEffect = 69,
-            damageSpeMinusOneEffect = 70, damageSpecialMinusOneEffect = 71, damageConfusionEffect = 76,
-            twineedleEffect = 77, hyperBeamEffect = 80;
-
-    // Taken from critical_hit_moves.asm; we could read this from the ROM, but it's easier to hardcode it.
-    public static final List<Integer> increasedCritMoves = Arrays.asList(Moves.karateChop, Moves.razorLeaf, Moves.crabhammer, Moves.slash);
-
-    public static final List<Integer> earlyRequiredHMs = Collections.singletonList(Moves.cut);
-
-    public static final int hmsStartIndex = Gen1Items.hm01, tmsStartIndex = Gen1Items.tm01;
-
-    public static final List<Integer> requiredFieldTMs = Arrays.asList(3, 4, 8, 10, 12, 14, 16, 19, 20,
-            22, 25, 26, 30, 40, 43, 44, 45, 47);
-
     public static final int towerMapsStartIndex = 0x90, towerMapsEndIndex = 0x94;
-
-    public static final String guaranteedCatchPrefix = "CF7EFE01";
 
     public static final Type[] typeTable = constructTypeTable();
 
@@ -124,27 +87,6 @@ public class Gen1Constants {
             }
         }
         return (byte) 0;
-    }
-
-    public static final ItemList allowedItems = setupAllowedItems();
-
-    private static ItemList setupAllowedItems() {
-        ItemList allowedItems = new ItemList(Gen1Items.tm50); // 251-255 are junk TMs
-        // Assorted key items & junk
-        // 23/01/2014: ban fake PP Up
-        allowedItems.banSingles(Gen1Items.townMap, Gen1Items.bicycle, Gen1Items.questionMark7,
-                Gen1Items.safariBall, Gen1Items.pokedex, Gen1Items.oldAmber, Gen1Items.cardKey, Gen1Items.ppUpGlitch,
-                Gen1Items.coin, Gen1Items.ssTicket, Gen1Items.goldTeeth);
-        allowedItems.banRange(Gen1Items.boulderBadge, 8);
-        allowedItems.banRange(Gen1Items.domeFossil, 5);
-        allowedItems.banRange(Gen1Items.coinCase, 10);
-        // Unused
-        allowedItems.banRange(Gen1Items.unused84, 112);
-        // HMs
-        allowedItems.banRange(hmsStartIndex, hmCount);
-        // Real TMs
-        allowedItems.tmRange(tmsStartIndex, tmCount);
-        return allowedItems;
     }
 
     public static void tagTrainersUniversal(List<Trainer> trs) {

@@ -354,20 +354,8 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
             moves[i].power = rom[offs + (i - 1) * 7 + 2] & 0xFF;
             moves[i].pp = rom[offs + (i - 1) * 7 + 5] & 0xFF;
             moves[i].type = Gen2Constants.typeTable[rom[offs + (i - 1) * 7 + 3]];
-            moves[i].category = GBConstants.physicalTypes.contains(moves[i].type) ? MoveCategory.PHYSICAL : MoveCategory.SPECIAL;
-            if (moves[i].power == 0 && !GlobalConstants.noPowerNonStatusMoves.contains(i)) {
-                moves[i].category = MoveCategory.STATUS;
-            }
 
-            if (i == Moves.swift) {
-                perfectAccuracy = (int)moves[i].hitratio;
-            }
-
-            if (GlobalConstants.normalMultihitMoves.contains(i)) {
-                moves[i].hitCount = 3;
-            } else if (GlobalConstants.doubleHitMoves.contains(i)) {
-                moves[i].hitCount = 2;
-            } else if (i == Moves.tripleKick) {
+            if (i == Moves.tripleKick) {
                 moves[i].hitCount = 2.71; // this assumes the first hit lands
             }
 

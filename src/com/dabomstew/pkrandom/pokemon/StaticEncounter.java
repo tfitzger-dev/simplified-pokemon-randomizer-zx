@@ -34,8 +34,6 @@ public class StaticEncounter {
     public int heldItem;
     public boolean isEgg = false;
     public boolean resetMoves = false;
-    public boolean restrictedPool = false;
-    public List<Pokemon> restrictedList = new ArrayList<>();
 
     // In the games, sometimes what is logically an encounter or set of encounters with one specific Pokemon
     // can actually consist of multiple encounters internally. This can happen because:
@@ -47,11 +45,6 @@ public class StaticEncounter {
     public List<StaticEncounter> linkedEncounters;
 
     public StaticEncounter() {
-        this.linkedEncounters = new ArrayList<>();
-    }
-
-    public StaticEncounter(Pokemon pkmn) {
-        this.pkmn = pkmn;
         this.linkedEncounters = new ArrayList<>();
     }
 
@@ -85,14 +78,4 @@ public class StaticEncounter {
         return pkmn.fullName() + ", " + levelStringBuilder.toString();
     }
 
-    public boolean canMegaEvolve() {
-        if (heldItem != 0) {
-            for (MegaEvolution mega: pkmn.megaEvolutionsFrom) {
-                if (mega.argument == heldItem) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 }

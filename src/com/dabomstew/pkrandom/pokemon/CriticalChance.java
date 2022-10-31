@@ -26,6 +26,5 @@ package com.dabomstew.pkrandom.pokemon;
 public enum CriticalChance {
     NONE, // Phased out in Gen 5+
     NORMAL,
-    INCREASED,
-    GUARANTEED
+    INCREASED
 }

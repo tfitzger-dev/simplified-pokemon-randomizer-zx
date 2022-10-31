@@ -25,16 +25,13 @@ package com.dabomstew.pkrandom.romhandlers;
 /*--  along with this program. If not, see <http://www.gnu.org/licenses/>.  --*/
 /*----------------------------------------------------------------------------*/
 
+import com.dabomstew.pkrandom.FileFunctions;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Random;
-
-import com.dabomstew.pkrandom.FileFunctions;
-import com.dabomstew.pkrandom.exceptions.CannotWriteToLocationException;
-import com.dabomstew.pkrandom.exceptions.RandomizerIOException;
 
 public abstract class AbstractGBRomHandler extends AbstractRomHandler {
 
@@ -64,10 +61,7 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
             fos.close();
             return true;
         } catch (IOException ex) {
-            if (ex.getMessage().contains("Access is denied")) {
-                throw new CannotWriteToLocationException("The randomizer cannot write to this location: " + filename);
-            }
-            return false;
+            throw new RuntimeException(ex);
         }
     }
 

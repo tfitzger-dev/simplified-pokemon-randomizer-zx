@@ -21,10 +21,6 @@ public class EvolutionUpdate implements Comparable<EvolutionUpdate> {
         this.additional = additional;
     }
 
-    public boolean isCondensed() {
-        return condensed;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

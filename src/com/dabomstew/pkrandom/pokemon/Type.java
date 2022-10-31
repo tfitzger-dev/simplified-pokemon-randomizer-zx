@@ -71,8 +71,4 @@ public enum Type {
         return VALUES.get(random.nextInt(SIZE));
     }
 
-    public String camelCase() {
-        return RomFunctions.camelCase(this.toString());
-    }
-
 }

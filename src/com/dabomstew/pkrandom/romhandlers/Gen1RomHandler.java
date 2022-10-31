@@ -65,8 +65,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
 
     private int[] pokeNumToRBYTable;
     private int[] pokeRBYToNumTable;
-    private int[] moveNumToRomTable;
-    private int[] moveRomToNumTable;
     private int pokedexCount;
 
     private Type idToType(int value) {
@@ -260,7 +258,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     private Pokemon[] pokes;
     private List<Pokemon> pokemonList;
     private RomEntry romEntry;
-    private Move[] moves;
     private String[] mapNames;
     private SubMap[] maps;
     private long actualCRC32;
@@ -275,8 +272,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         romEntry = checkRomEntry(this.rom);
         pokeNumToRBYTable = new int[256];
         pokeRBYToNumTable = new int[256];
-        moveNumToRomTable = new int[256];
-        moveRomToNumTable = new int[256];
         maps = new SubMap[256];
         clearTextTables();
         readTextTable("gameboy_jpn");
@@ -286,7 +281,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         loadPokedexOrder();
         loadPokemonStats();
         pokemonList = Arrays.asList(pokes);
-        loadMoves();
         preloadMaps();
         loadMapNames();
         actualCRC32 = FileFunctions.getCRC32(rom);
@@ -323,307 +317,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     @Override
     public void savingRom() {
         savePokemonStats();
-        saveMoves();
-    }
-
-    private String[] readMoveNames() {
-        int moveCount = romEntry.getValue("MoveCount");
-        int offset = romEntry.getValue("MoveNamesOffset");
-        String[] moveNames = new String[moveCount + 1];
-        for (int i = 1; i <= moveCount; i++) {
-            moveNames[i] = readVariableLengthString(offset);
-            offset += lengthOfStringAt(offset, false) + 1;
-        }
-        return moveNames;
-    }
-
-    private void loadMoves() {
-        String[] moveNames = readMoveNames();
-        int moveCount = romEntry.getValue("MoveCount");
-        int movesOffset = romEntry.getValue("MoveDataOffset");
-        // check real move count
-        int trueMoveCount = 0;
-        for (int i = 1; i <= moveCount; i++) {
-            // temp hack for Brown
-            if (rom[movesOffset + (i - 1) * 6] != 0 && !moveNames[i].equals("Nothing")) {
-                trueMoveCount++;
-            }
-        }
-        moves = new Move[trueMoveCount + 1];
-        int trueMoveIndex = 0;
-
-        for (int i = 1; i <= moveCount; i++) {
-            int anim = rom[movesOffset + (i - 1) * 6] & 0xFF;
-            // another temp hack for brown
-            if (anim > 0 && !moveNames[i].equals("Nothing")) {
-                trueMoveIndex++;
-                moveNumToRomTable[trueMoveIndex] = i;
-                moveRomToNumTable[i] = trueMoveIndex;
-                moves[trueMoveIndex] = new Move();
-                moves[trueMoveIndex].name = moveNames[i];
-                moves[trueMoveIndex].internalId = i;
-                moves[trueMoveIndex].number = trueMoveIndex;
-                moves[trueMoveIndex].effectIndex = rom[movesOffset + (i - 1) * 6 + 1] & 0xFF;
-                moves[trueMoveIndex].hitratio = ((rom[movesOffset + (i - 1) * 6 + 4] & 0xFF)) / 255.0 * 100;
-                moves[trueMoveIndex].power = rom[movesOffset + (i - 1) * 6 + 2] & 0xFF;
-                moves[trueMoveIndex].pp = rom[movesOffset + (i - 1) * 6 + 5] & 0xFF;
-                moves[trueMoveIndex].type = idToType(rom[movesOffset + (i - 1) * 6 + 3] & 0xFF);
-                moves[trueMoveIndex].category = GBConstants.physicalTypes.contains(moves[trueMoveIndex].type) ? MoveCategory.PHYSICAL : MoveCategory.SPECIAL;
-                if (moves[trueMoveIndex].power == 0 && !GlobalConstants.noPowerNonStatusMoves.contains(trueMoveIndex)) {
-                    moves[trueMoveIndex].category = MoveCategory.STATUS;
-                }
-
-                if (GlobalConstants.normalMultihitMoves.contains(i)) {
-                    moves[trueMoveIndex].hitCount = 3;
-                } else if (GlobalConstants.doubleHitMoves.contains(i)) {
-                    moves[trueMoveIndex].hitCount = 2;
-                }
-
-                loadStatChangesFromEffect(moves[trueMoveIndex]);
-                loadStatusFromEffect(moves[trueMoveIndex]);
-                loadMiscMoveInfoFromEffect(moves[trueMoveIndex]);
-            }
-        }
-    }
-
-    private void loadStatChangesFromEffect(Move move) {
-        switch (move.effectIndex) {
-            case Gen1Constants.noDamageAtkPlusOneEffect:
-                move.statChanges[0].type = StatChangeType.ATTACK;
-                move.statChanges[0].stages = 1;
-                break;
-            case Gen1Constants.noDamageDefPlusOneEffect:
-                move.statChanges[0].type = StatChangeType.DEFENSE;
-                move.statChanges[0].stages = 1;
-                break;
-            case Gen1Constants.noDamageSpecialPlusOneEffect:
-                move.statChanges[0].type = StatChangeType.SPECIAL;
-                move.statChanges[0].stages = 1;
-                break;
-            case Gen1Constants.noDamageEvasionPlusOneEffect:
-                move.statChanges[0].type = StatChangeType.EVASION;
-                move.statChanges[0].stages = 1;
-                break;
-            case Gen1Constants.noDamageAtkMinusOneEffect:
-            case Gen1Constants.damageAtkMinusOneEffect:
-                move.statChanges[0].type = StatChangeType.ATTACK;
-                move.statChanges[0].stages = -1;
-                break;
-            case Gen1Constants.noDamageDefMinusOneEffect:
-            case Gen1Constants.damageDefMinusOneEffect:
-                move.statChanges[0].type = StatChangeType.DEFENSE;
-                move.statChanges[0].stages = -1;
-                break;
-            case Gen1Constants.noDamageSpeMinusOneEffect:
-            case Gen1Constants.damageSpeMinusOneEffect:
-                move.statChanges[0].type = StatChangeType.SPEED;
-                move.statChanges[0].stages = -1;
-                break;
-            case Gen1Constants.noDamageAccuracyMinusOneEffect:
-                move.statChanges[0].type = StatChangeType.ACCURACY;
-                move.statChanges[0].stages = -1;
-                break;
-            case Gen1Constants.noDamageAtkPlusTwoEffect:
-                move.statChanges[0].type = StatChangeType.ATTACK;
-                move.statChanges[0].stages = 2;
-                break;
-            case Gen1Constants.noDamageDefPlusTwoEffect:
-                move.statChanges[0].type = StatChangeType.DEFENSE;
-                move.statChanges[0].stages = 2;
-                break;
-            case Gen1Constants.noDamageSpePlusTwoEffect:
-                move.statChanges[0].type = StatChangeType.SPEED;
-                move.statChanges[0].stages = 2;
-                break;
-            case Gen1Constants.noDamageSpecialPlusTwoEffect:
-                move.statChanges[0].type = StatChangeType.SPECIAL;
-                move.statChanges[0].stages = 2;
-                break;
-            case Gen1Constants.noDamageDefMinusTwoEffect:
-                move.statChanges[0].type = StatChangeType.DEFENSE;
-                move.statChanges[0].stages = -2;
-                break;
-            case Gen1Constants.damageSpecialMinusOneEffect:
-                move.statChanges[0].type = StatChangeType.SPECIAL;
-                move.statChanges[0].stages = -1;
-                break;
-            default:
-                // Move does not have a stat-changing effect
-                return;
-        }
-
-        switch (move.effectIndex) {
-            case Gen1Constants.noDamageAtkPlusOneEffect:
-            case Gen1Constants.noDamageDefPlusOneEffect:
-            case Gen1Constants.noDamageSpecialPlusOneEffect:
-            case Gen1Constants.noDamageEvasionPlusOneEffect:
-            case Gen1Constants.noDamageAtkMinusOneEffect:
-            case Gen1Constants.noDamageDefMinusOneEffect:
-            case Gen1Constants.noDamageSpeMinusOneEffect:
-            case Gen1Constants.noDamageAccuracyMinusOneEffect:
-            case Gen1Constants.noDamageAtkPlusTwoEffect:
-            case Gen1Constants.noDamageDefPlusTwoEffect:
-            case Gen1Constants.noDamageSpePlusTwoEffect:
-            case Gen1Constants.noDamageSpecialPlusTwoEffect:
-            case Gen1Constants.noDamageDefMinusTwoEffect:
-                if (move.statChanges[0].stages < 0) {
-                    move.statChangeMoveType = StatChangeMoveType.NO_DAMAGE_TARGET;
-                } else {
-                    move.statChangeMoveType = StatChangeMoveType.NO_DAMAGE_USER;
-                }
-                break;
-
-            case Gen1Constants.damageAtkMinusOneEffect:
-            case Gen1Constants.damageDefMinusOneEffect:
-            case Gen1Constants.damageSpeMinusOneEffect:
-            case Gen1Constants.damageSpecialMinusOneEffect:
-                move.statChangeMoveType = StatChangeMoveType.DAMAGE_TARGET;
-                break;
-        }
-
-        if (move.statChangeMoveType == StatChangeMoveType.DAMAGE_TARGET) {
-            for (int i = 0; i < move.statChanges.length; i++) {
-                if (move.statChanges[i].type != StatChangeType.NONE) {
-                    move.statChanges[i].percentChance = 85 / 256.0;
-                }
-            }
-        }
-    }
-
-    private void loadStatusFromEffect(Move move) {
-        switch (move.effectIndex) {
-            case Gen1Constants.noDamageSleepEffect:
-            case Gen1Constants.noDamageConfusionEffect:
-            case Gen1Constants.noDamagePoisonEffect:
-            case Gen1Constants.noDamageParalyzeEffect:
-                move.statusMoveType = StatusMoveType.NO_DAMAGE;
-                break;
-
-            case Gen1Constants.damagePoison20PercentEffect:
-            case Gen1Constants.damageBurn10PercentEffect:
-            case Gen1Constants.damageFreeze10PercentEffect:
-            case Gen1Constants.damageParalyze10PercentEffect:
-            case Gen1Constants.damagePoison40PercentEffect:
-            case Gen1Constants.damageBurn30PercentEffect:
-            case Gen1Constants.damageFreeze30PercentEffect:
-            case Gen1Constants.damageParalyze30PercentEffect:
-            case Gen1Constants.damageConfusionEffect:
-            case Gen1Constants.twineedleEffect:
-                move.statusMoveType = StatusMoveType.DAMAGE;
-                break;
-
-            default:
-                // Move does not have a status effect
-                return;
-        }
-
-        switch (move.effectIndex) {
-            case Gen1Constants.noDamageSleepEffect:
-                move.statusType = StatusType.SLEEP;
-                break;
-            case Gen1Constants.damagePoison20PercentEffect:
-            case Gen1Constants.damagePoison40PercentEffect:
-            case Gen1Constants.noDamagePoisonEffect:
-            case Gen1Constants.twineedleEffect:
-                move.statusType = StatusType.POISON;
-                if (move.number == Moves.toxic) {
-                    move.statusType = StatusType.TOXIC_POISON;
-                }
-                break;
-            case Gen1Constants.damageBurn10PercentEffect:
-            case Gen1Constants.damageBurn30PercentEffect:
-                move.statusType = StatusType.BURN;
-                break;
-            case Gen1Constants.damageFreeze10PercentEffect:
-            case Gen1Constants.damageFreeze30PercentEffect:
-                move.statusType = StatusType.FREEZE;
-                break;
-            case Gen1Constants.damageParalyze10PercentEffect:
-            case Gen1Constants.damageParalyze30PercentEffect:
-            case Gen1Constants.noDamageParalyzeEffect:
-                move.statusType = StatusType.PARALYZE;
-                break;
-            case Gen1Constants.noDamageConfusionEffect:
-            case Gen1Constants.damageConfusionEffect:
-                move.statusType = StatusType.CONFUSION;
-                break;
-        }
-
-        if (move.statusMoveType == StatusMoveType.DAMAGE) {
-            switch (move.effectIndex) {
-                case Gen1Constants.damageBurn10PercentEffect:
-                case Gen1Constants.damageFreeze10PercentEffect:
-                case Gen1Constants.damageParalyze10PercentEffect:
-                case Gen1Constants.damageConfusionEffect:
-                    move.statusPercentChance = 10.0;
-                    break;
-                case Gen1Constants.damagePoison20PercentEffect:
-                case Gen1Constants.twineedleEffect:
-                    move.statusPercentChance = 20.0;
-                    break;
-                case Gen1Constants.damageBurn30PercentEffect:
-                case Gen1Constants.damageFreeze30PercentEffect:
-                case Gen1Constants.damageParalyze30PercentEffect:
-                    move.statusPercentChance = 30.0;
-                    break;
-                case Gen1Constants.damagePoison40PercentEffect:
-                    move.statusPercentChance = 40.0;
-                    break;
-            }
-        }
-    }
-
-    private void loadMiscMoveInfoFromEffect(Move move) {
-        switch (move.effectIndex) {
-            case Gen1Constants.flinch10PercentEffect:
-                move.flinchPercentChance = 10.0;
-                break;
-
-            case Gen1Constants.flinch30PercentEffect:
-                move.flinchPercentChance = 30.0;
-                break;
-
-            case Gen1Constants.damageAbsorbEffect:
-            case Gen1Constants.dreamEaterEffect:
-                move.absorbPercent = 50;
-                break;
-
-            case Gen1Constants.damageRecoilEffect:
-                move.recoilPercent = 25;
-                break;
-
-            case Gen1Constants.chargeEffect:
-            case Gen1Constants.flyEffect:
-                move.isChargeMove = true;
-                break;
-
-            case Gen1Constants.hyperBeamEffect:
-                move.isRechargeMove = true;
-                break;
-        }
-
-        if (Gen1Constants.increasedCritMoves.contains(move.number)) {
-            move.criticalChance = CriticalChance.INCREASED;
-        }
-    }
-
-    private void saveMoves() {
-        int movesOffset = romEntry.getValue("MoveDataOffset");
-        for (Move m : moves) {
-            if (m != null) {
-                int i = m.internalId;
-                rom[movesOffset + (i - 1) * 6 + 1] = (byte) m.effectIndex;
-                rom[movesOffset + (i - 1) * 6 + 2] = (byte) m.power;
-                rom[movesOffset + (i - 1) * 6 + 3] = typeToByte(m.type);
-                int hitratio = (int) Math.round(m.hitratio * 2.55);
-                rom[movesOffset + (i - 1) * 6 + 4] = (byte) hitratio;
-                rom[movesOffset + (i - 1) * 6 + 5] = (byte) m.pp;
-            }
-        }
-    }
-
-    public List<Move> getMoves() {
-        return Arrays.asList(moves);
     }
 
     @Override
@@ -1234,6 +927,11 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
             rom[champRivalJump + 1] = GBConstants.gbZ80Nop;
         }
 
+    }
+
+    @Override
+    public List<Move> getMoves() {
+        return null;
     }
 
     @Override

@@ -39,14 +39,6 @@ public class ItemList {
         }
     }
 
-    public boolean isTM(int index) {
-        return index >= 0 && index < tms.length && tms[index];
-    }
-
-    public boolean isAllowed(int index) {
-        return index >= 0 && index < tms.length && items[index];
-    }
-
     public void banSingles(int... indexes) {
         for (int index : indexes) {
             items[index] = false;
@@ -65,39 +57,8 @@ public class ItemList {
         }
     }
 
-    public int randomItem(Random random) {
-        int chosen = 0;
-        while (!items[chosen]) {
-            chosen = random.nextInt(items.length);
-        }
-        return chosen;
-    }
-
-    public int randomNonTM(Random random) {
-        int chosen = 0;
-        while (!items[chosen] || tms[chosen]) {
-            chosen = random.nextInt(items.length);
-        }
-        return chosen;
-    }
-
-    public int randomTM(Random random) {
-        int chosen = 0;
-        while (!tms[chosen]) {
-            chosen = random.nextInt(items.length);
-        }
-        return chosen;
-    }
-
     public ItemList copy() {
         ItemList other = new ItemList(items.length - 1);
-        System.arraycopy(items, 0, other.items, 0, items.length);
-        System.arraycopy(tms, 0, other.tms, 0, tms.length);
-        return other;
-    }
-
-    public ItemList copy(int newMax) {
-        ItemList other = new ItemList(newMax);
         System.arraycopy(items, 0, other.items, 0, items.length);
         System.arraycopy(tms, 0, other.tms, 0, tms.length);
         return other;
