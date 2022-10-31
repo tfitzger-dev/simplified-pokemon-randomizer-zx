@@ -18,8 +18,7 @@ public class CliRandomizer {
     private final static ResourceBundle bundle = java.util.ResourceBundle.getBundle("com/dabomstew/pkrandom/newgui/Bundle");
 
     private static boolean performDirectRandomization(String settingsFilePath, String sourceRomFilePath,
-                                                      String destinationRomFilePath, boolean saveAsDirectory,
-                                                      String updateFilePath, boolean saveLog) {
+                                                      String destinationRomFilePath, boolean saveAsDirectory) {
         // borrowed directly from NewRandomizerGUI()
         RomHandler.Factory[] checkHandlers = new RomHandler.Factory[] {
                 new Gen1RomHandler.Factory(),
@@ -33,7 +32,6 @@ public class CliRandomizer {
             FileInputStream fis = new FileInputStream(fh);
             settings = Settings.read(fis);
             // taken from com.dabomstew.pkrandom.newgui.NewRandomizerGUI.saveROM, set distinctly from all other settings
-            settings.setCustomNames(FileFunctions.getCustomNames());
             fis.close();
         } catch (UnsupportedOperationException | IllegalArgumentException | IOException ex) {
             ex.printStackTrace();
@@ -64,7 +62,7 @@ public class CliRandomizer {
                         List<String> extensions = new ArrayList<>(Arrays.asList("sgb", "gbc", "gba", "nds", "cxi"));
                         extensions.remove(romHandler.getDefaultExtension());
 
-                        fh = FileFunctions.fixFilename(fh, romHandler.getDefaultExtension(), extensions);
+                        fh = FileFunctions.fixFilename(fh, romHandler.getDefaultExtension());
                     }
 
                     String filename = fh.getAbsolutePath();
@@ -118,9 +116,7 @@ public class CliRandomizer {
                 settingsFilePath,
                 sourceRomFilePath,
                 outputRomFilePath,
-                saveAsDirectory,
-                updateFilePath,
-                saveLog
+                saveAsDirectory
         );
         return processResult ? 0 : 1;
     }

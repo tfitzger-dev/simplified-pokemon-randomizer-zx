@@ -48,19 +48,11 @@ public class MiscTweak implements Comparable<MiscTweak> {
     public static final MiscTweak ALLOW_PIKACHU_EVOLUTION = new MiscTweak(1 << 6, "pikachuEvo", 0);
     public static final MiscTweak NATIONAL_DEX_AT_START = new MiscTweak(1 << 7, "nationalDex", 0);
     public static final MiscTweak UPDATE_TYPE_EFFECTIVENESS = new MiscTweak(1 << 8, "typeEffectiveness", 0);
-    public static final MiscTweak FORCE_CHALLENGE_MODE = new MiscTweak(1 << 9, "forceChallengeMode", 0);
     public static final MiscTweak LOWER_CASE_POKEMON_NAMES = new MiscTweak(1 << 10, "lowerCaseNames", 0);
     public static final MiscTweak RANDOMIZE_CATCHING_TUTORIAL = new MiscTweak(1 << 11, "catchingTutorial", 0);
     public static final MiscTweak BAN_LUCKY_EGG = new MiscTweak(1 << 12, "luckyEgg", 1);
-    public static final MiscTweak NO_FREE_LUCKY_EGG = new MiscTweak(1 << 13,"freeLuckyEgg",0);
-    public static final MiscTweak BAN_BIG_MANIAC_ITEMS = new MiscTweak(1 << 14, "maniacItems",1);
-    public static final MiscTweak SOS_BATTLES_FOR_ALL = new MiscTweak(1 << 15, "sosBattles",0);
     public static final MiscTweak BALANCE_STATIC_LEVELS = new MiscTweak(1 << 16, "balanceStaticLevels",0);
-    public static final MiscTweak RETAIN_ALT_FORMES = new MiscTweak(1 << 17, "retainAltFormes",0);
     public static final MiscTweak RUN_WITHOUT_RUNNING_SHOES = new MiscTweak(1 << 18, "runWithoutRunningShoes", 0);
-    public static final MiscTweak FASTER_HP_AND_EXP_BARS = new MiscTweak(1 << 19, "fasterHpAndExpBars", 0);
-    public static final MiscTweak FAST_DISTORTION_WORLD = new MiscTweak(1 << 20, "fastDistortionWorld", 0);
-    public static final MiscTweak UPDATE_ROTOM_FORME_TYPING = new MiscTweak(1 << 21, "updateRotomFormeTyping", 0);
     /* @formatter:on */
 
     private final int value;
@@ -78,14 +70,6 @@ public class MiscTweak implements Comparable<MiscTweak> {
 
     public int getValue() {
         return value;
-    }
-
-    public String getTweakName() {
-        return tweakName;
-    }
-
-    public String getTooltipText() {
-        return tooltipText;
     }
 
     @Override

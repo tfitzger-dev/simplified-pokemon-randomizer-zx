@@ -36,81 +36,21 @@ import java.util.zip.CRC32;
 
 public class FileFunctions {
 
-    public static File fixFilename(File original, String defaultExtension) {
-        return fixFilename(original, defaultExtension, new ArrayList<>());
-    }
-
     // Behavior:
     // if file has no extension, add defaultExtension
     // if there are banned extensions & file has a banned extension, replace
     // with defaultExtension
     // else, leave as is
-    public static File fixFilename(File original, String defaultExtension, List<String> bannedExtensions) {
+    public static File fixFilename(File original, String defaultExtension) {
         String absolutePath = original.getAbsolutePath();
-        for (String bannedExtension: bannedExtensions) {
-            if (absolutePath.endsWith("." + bannedExtension)) {
-                absolutePath = absolutePath.substring(0, absolutePath.lastIndexOf('.') + 1) + defaultExtension;
-                break;
-            }
-        }
         if (!absolutePath.endsWith("." + defaultExtension)) {
             absolutePath += "." + defaultExtension;
         }
         return new File(absolutePath);
     }
 
-    private static List<String> overrideFiles = Arrays.asList(SysConstants.customNamesFile,
-            SysConstants.tclassesFile, SysConstants.tnamesFile, SysConstants.nnamesFile);
-
-    public static boolean configExists(String filename) {
-        if (overrideFiles.contains(filename)) {
-            File fh = new File(SysConstants.ROOT_PATH + filename);
-            if (fh.exists() && fh.canRead()) {
-                return true;
-            }
-            fh = new File("./" + filename);
-            if (fh.exists() && fh.canRead()) {
-                return true;
-            }
-        }
-        return FileFunctions.class.getResource("/com/dabomstew/pkrandom/config/" + filename) != null;
-    }
-
     public static InputStream openConfig(String filename) throws FileNotFoundException {
-        if (overrideFiles.contains(filename)) {
-            File fh = new File(SysConstants.ROOT_PATH + filename);
-            if (fh.exists() && fh.canRead()) {
-                return new FileInputStream(fh);
-            }
-            fh = new File("./" + filename);
-            if (fh.exists() && fh.canRead()) {
-                return new FileInputStream(fh);
-            }
-        }
         return FileFunctions.class.getResourceAsStream("/com/dabomstew/pkrandom/config/" + filename);
-    }
-
-    public static CustomNamesSet getCustomNames() throws IOException {
-        InputStream is = openConfig(SysConstants.customNamesFile);
-        CustomNamesSet cns = new CustomNamesSet(is);
-        is.close();
-        return cns;
-    }
-
-    public static long readFullLong(byte[] data, int offset) {
-        ByteBuffer buf = ByteBuffer.allocate(8);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(data, offset, 8);
-        buf.rewind();
-        return buf.getLong();
-    }
-
-    public static int readFullInt(byte[] data, int offset) {
-        ByteBuffer buf = ByteBuffer.allocate(4);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(data, offset, 4);
-        buf.rewind();
-        return buf.getInt();
     }
 
     public static int readFullIntBigEndian(byte[] data, int offset) {
@@ -119,17 +59,8 @@ public class FileFunctions {
         return buf.getInt();
     }
 
-    public static int read2ByteIntBigEndian(byte[] data, int index) {
-        return (data[index + 1] & 0xFF) | ((data[index] & 0xFF) << 8);
-    }
-
     public static int read2ByteInt(byte[] data, int index) {
         return (data[index] & 0xFF) | ((data[index + 1] & 0xFF) << 8);
-    }
-
-    public static void write2ByteInt(byte[] data, int offset, int value) {
-        data[offset] = (byte) (value & 0xFF);
-        data[offset + 1] = (byte) ((value >> 8) & 0xFF);
     }
 
     public static void writeFullInt(byte[] data, int offset, int value) {
@@ -137,25 +68,9 @@ public class FileFunctions {
         System.arraycopy(valueBytes, 0, data, offset, 4);
     }
 
-    public static void writeFullIntBigEndian(byte[] data, int offset, int value) {
-        byte[] valueBytes = ByteBuffer.allocate(4).putInt(value).array();
-        System.arraycopy(valueBytes, 0, data, offset, 4);
-    }
-
-    public static void writeFullLong(byte[] data, int offset, long value) {
-        byte[] valueBytes = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
-        System.arraycopy(valueBytes, 0, data, offset, 8);
-    }
-
     public static byte[] readFileFullyIntoBuffer(String filename) throws IOException {
         File fh = new File(filename);
-        if (!fh.exists() || !fh.isFile() || !fh.canRead()) {
-            throw new FileNotFoundException(filename);
-        }
         long fileSize = fh.length();
-        if (fileSize > Integer.MAX_VALUE) {
-            throw new IOException(filename + " is too long to read in as a byte-array.");
-        }
         FileInputStream fis = new FileInputStream(filename);
         byte[] buf = readFullyIntoBuffer(fis, (int) fileSize);
         fis.close();
@@ -175,79 +90,21 @@ public class FileFunctions {
         }
     }
 
-    public static int read2ByteBigEndianIntFromFile(RandomAccessFile file, long offset) throws IOException {
-        byte[] buf = new byte[2];
-        file.seek(offset);
-        file.readFully(buf);
-        return read2ByteIntBigEndian(buf, 0);
+    public static int getFileChecksum(String filename) throws FileNotFoundException, UnsupportedEncodingException {
+        return getFileChecksum(openConfig(filename));
     }
 
-    public static int readBigEndianIntFromFile(RandomAccessFile file, long offset) throws IOException {
-        byte[] buf = new byte[4];
-        file.seek(offset);
-        file.readFully(buf);
-        return readFullIntBigEndian(buf, 0);
-    }
-
-    public static int readIntFromFile(RandomAccessFile file, long offset) throws IOException {
-        byte[] buf = new byte[4];
-        file.seek(offset);
-        file.readFully(buf);
-        return readFullInt(buf, 0);
-    }
-
-    public static void writeBytesToFile(String filename, byte[] data) throws IOException {
-        FileOutputStream fos = new FileOutputStream(filename);
-        fos.write(data);
-        fos.close();
-    }
-
-    public static byte[] getConfigAsBytes(String filename) throws IOException {
-        InputStream in = openConfig(filename);
-        byte[] buf = readFullyIntoBuffer(in, in.available());
-        in.close();
-        return buf;
-    }
-
-    public static int getFileChecksum(String filename) {
-        try {
-            return getFileChecksum(openConfig(filename));
-        } catch (IOException e) {
-            return 0;
-        }
-    }
-
-    private static int getFileChecksum(InputStream stream) {
-        try {
-            Scanner sc = new Scanner(stream, "UTF-8");
-            CRC32 checksum = new CRC32();
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
-                if (!line.isEmpty()) {
-                    checksum.update(line.getBytes("UTF-8"));
-                }
+    private static int getFileChecksum(InputStream stream) throws UnsupportedEncodingException {
+        Scanner sc = new Scanner(stream, "UTF-8");
+        CRC32 checksum = new CRC32();
+        while (sc.hasNextLine()) {
+            String line = sc.nextLine().trim();
+            if (!line.isEmpty()) {
+                checksum.update(line.getBytes("UTF-8"));
             }
-            sc.close();
-            return (int) checksum.getValue();
-        } catch (IOException e) {
-            return 0;
         }
-    }
-
-    public static boolean checkOtherCRC(byte[] data, int byteIndex, int switchIndex, String filename, int offsetInData) {
-        // If the switch at data[byteIndex].switchIndex is on, then check that
-        // the CRC at data[offsetInData] ... data[offsetInData+3] matches the
-        // CRC of filename.
-        // If not, return false.
-        // If any other case, return true.
-        int switches = data[byteIndex] & 0xFF;
-        if (((switches >> switchIndex) & 0x01) == 0x01) {
-            // have to check the CRC
-            int crc = readFullIntBigEndian(data, offsetInData);
-
-            return getFileChecksum(filename) == crc;
-        }
-        return true;
+        sc.close();
+        return (int) checksum.getValue();
     }
 
     public static long getCRC32(byte[] data) {
@@ -261,18 +118,6 @@ public class FileFunctions {
         byte[] buf = readFullyIntoBuffer(is, is.available());
         is.close();
         return buf;
-    }
-
-    public static byte[] downloadFile(String url) throws IOException {
-        BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int count;
-        while ((count = in.read(buf, 0, 1024)) != -1) {
-            out.write(buf, 0, count);
-        }
-        in.close();
-        return out.toByteArray();
     }
 
     public static void applyPatch(byte[] rom, String patchName) throws IOException {
@@ -341,13 +186,5 @@ public class FileFunctions {
 
     private static int readIPSSize(byte[] data, int offset) {
         return ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
-    }
-
-    public static byte[] convIntArrToByteArr(int[] arg) {
-        byte[] out = new byte[arg.length];
-        for (int i = 0; i < arg.length; i++) {
-            out[i] = (byte) arg[i];
-        }
-        return out;
     }
 }

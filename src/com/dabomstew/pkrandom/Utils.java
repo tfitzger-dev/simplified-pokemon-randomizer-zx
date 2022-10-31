@@ -39,78 +39,10 @@ import java.util.zip.CRC32;
 
 public class Utils {
 
-    public static void validateRomFile(File fh) throws InvalidROMException {
-        // first, check for common filetypes that aren't ROMs
-        // read first 10 bytes of the file to do this
-        try {
-            FileInputStream fis = new FileInputStream(fh);
-            byte[] sig = new byte[10];
-            int sigLength = fis.read(sig);
-            fis.close();
-            if (sigLength < 10) {
-                throw new InvalidROMException(InvalidROMException.Type.LENGTH, String.format(
-                        "%s appears to be a blank or nearly blank file.", fh.getName()));
-            }
-            if (sig[0] == 0x50 && sig[1] == 0x4b && sig[2] == 0x03 && sig[3] == 0x04) {
-                throw new InvalidROMException(InvalidROMException.Type.ZIP_FILE, String.format(
-                        "%s is a ZIP archive, not a ROM.", fh.getName()));
-            }
-            if (sig[0] == 0x52 && sig[1] == 0x61 && sig[2] == 0x72 && sig[3] == 0x21 && sig[4] == 0x1A
-                    && sig[5] == 0x07) {
-                throw new InvalidROMException(InvalidROMException.Type.RAR_FILE, String.format(
-                        "%s is a RAR archive, not a ROM.", fh.getName()));
-            }
-            if (sig[0] == 'P' && sig[1] == 'A' && sig[2] == 'T' && sig[3] == 'C' && sig[4] == 'H') {
-                throw new InvalidROMException(InvalidROMException.Type.IPS_FILE, String.format(
-                        "%s is a IPS patch, not a ROM.", fh.getName()));
-            }
-        } catch (IOException ex) {
-            throw new InvalidROMException(InvalidROMException.Type.UNREADABLE, String.format(
-                    "Could not read %s from disk.", fh.getName()));
-        }
-    }
-
-    // RomHandlers implicitly rely on these - call this before creating settings
-    // etc.
-    public static void testForRequiredConfigs() throws FileNotFoundException {
-        String[] required = new String[] { "gameboy_jpn.tbl", "rby_english.tbl", "rby_freger.tbl", "rby_espita.tbl",
-                "green_translation.tbl", "gsc_english.tbl", "gsc_freger.tbl", "gsc_espita.tbl", "gba_english.tbl",
-                "gba_jpn.tbl", "Generation4.tbl", "Generation5.tbl", "gen1_offsets.ini", "gen2_offsets.ini",
-                "gen3_offsets.ini", "gen4_offsets.ini", "gen5_offsets.ini", "gen6_offsets.ini", "gen7_offsets.ini",
-                SysConstants.customNamesFile };
-        for (String filename : required) {
-            if (!FileFunctions.configExists(filename)) {
-                throw new FileNotFoundException(filename);
-            }
-        }
-    }
-
     public static File getExecutionLocation() throws UnsupportedEncodingException {
         URL location = Utils.class.getProtectionDomain().getCodeSource().getLocation();
         String file = location.getFile();
         String plusEncoded = file.replaceAll("\\+", "%2b");
         return new File(java.net.URLDecoder.decode(plusEncoded, "UTF-8"));
-    }
-
-    public static class InvalidROMException extends Exception {
-        /**
-         * 
-         */
-        private static final long serialVersionUID = 6568398515886021477L;
-
-        public enum Type {
-            LENGTH, ZIP_FILE, RAR_FILE, IPS_FILE, UNREADABLE
-        }
-
-        private final Type type;
-
-        public InvalidROMException(Type type, String message) {
-            super(message);
-            this.type = type;
-        }
-
-        public Type getType() {
-            return type;
-        }
     }
 }
