@@ -2376,16 +2376,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
 
         // find map banks
         while (true) {
-            boolean valid = true;
-            for (int mbOffset : mapBankOffsets) {
-                if (mbpsOffset < mbOffset && offset >= mbOffset) {
-                    valid = false;
-                    break;
-                }
-            }
-            if (!valid) {
-                break;
-            }
             int newMBOffset = readPointer(offset);
             if (newMBOffset < 0 || newMBOffset >= rom.length) {
                 break;
