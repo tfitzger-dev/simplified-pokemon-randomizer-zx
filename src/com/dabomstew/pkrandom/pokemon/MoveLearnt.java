@@ -29,8 +29,4 @@ public class MoveLearnt {
     public int move;
     public int level;
 
-    public String toString() {
-        return "move " + move + " at level " + level;
-    }
-
 }

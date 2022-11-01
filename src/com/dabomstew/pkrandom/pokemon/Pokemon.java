@@ -80,13 +80,6 @@ public class Pokemon implements Comparable<Pokemon> {
     }
 
     @Override
-    public String toString() {
-        return "Pokemon [name=" + name + formeSuffix + ", number=" + number + ", primaryType=" + primaryType
-                + ", secondaryType=" + secondaryType + ", hp=" + hp + ", attack=" + attack + ", defense=" + defense
-                + ", spatk=" + spatk + ", spdef=" + spdef + ", speed=" + speed + "]";
-    }
-
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -98,10 +91,6 @@ public class Pokemon implements Comparable<Pokemon> {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
         Pokemon other = (Pokemon) obj;
         return number == other.number;
     }

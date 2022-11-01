@@ -39,54 +39,6 @@ public class Trainer implements Comparable<Trainer> {
     public String fullDisplayName;
     public MultiBattleStatus multiBattleStatus = MultiBattleStatus.NEVER;
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder("[");
-        if (fullDisplayName != null) {
-            sb.append(fullDisplayName).append(" ");
-        } else if (name != null) {
-            sb.append(name).append(" ");
-        }
-        if (trainerclass != 0) {
-            sb.append("(").append(trainerclass).append(") - ");
-        }
-        if (offset > 0) {
-            sb.append(String.format("%x", offset));
-        }
-        sb.append(" => ");
-        boolean first = true;
-        for (TrainerPokemon p : pokemon) {
-            if (!first) {
-                sb.append(',');
-            }
-            sb.append(p.pokemon.name).append(" Lv").append(p.level);
-            first = false;
-        }
-        sb.append(']');
-        if (tag != null) {
-            sb.append(" (").append(tag).append(")");
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + index;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Trainer other = (Trainer) obj;
-        return index == other.index;
-    }
 
     @Override
     public int compareTo(Trainer o) {

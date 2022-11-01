@@ -29,58 +29,41 @@ public enum ExpCurve {
     SLOW, MEDIUM_SLOW, MEDIUM_FAST, FAST, ERRATIC, FLUCTUATING;
 
     public static ExpCurve fromByte(byte curve) {
+        ExpCurve ret = null;
         switch (curve) {
         case 0:
-            return MEDIUM_FAST;
+            ret = MEDIUM_FAST;
         case 1:
-            return ERRATIC;
+            ret =  ERRATIC;
         case 2:
-            return FLUCTUATING;
+            ret =  FLUCTUATING;
         case 3:
-            return MEDIUM_SLOW;
+            ret =  MEDIUM_SLOW;
         case 4:
-            return FAST;
+            ret =  FAST;
         case 5:
-            return SLOW;
+            ret =  SLOW;
         }
-        return null;
+        return ret;
     }
 
     public byte toByte() {
+        byte ret = (byte)0;
         switch (this) {
         case SLOW:
-            return 5;
+            ret = 5;
         case MEDIUM_SLOW:
-            return 3;
+            ret = 3;
         case MEDIUM_FAST:
-            return 0;
+            ret = 0;
         case FAST:
-            return 4;
+            ret = 4;
         case ERRATIC:
-            return 1;
+            ret = 1;
         case FLUCTUATING:
-            return 2;
+            ret = 2;
         }
-        return 0; // default
-    }
-
-    @Override
-    public String toString() {
-        switch (this) {
-        case MEDIUM_FAST:
-            return "Medium Fast";
-        case ERRATIC:
-            return "Erratic";
-        case FLUCTUATING:
-            return "Fluctuating";
-        case MEDIUM_SLOW:
-            return "Medium Slow";
-        case FAST:
-            return "Fast";
-        case SLOW:
-            return "Slow";
-        }
-        return null;
+        return ret; // default
     }
 
 }

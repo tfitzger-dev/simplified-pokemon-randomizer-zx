@@ -33,10 +33,4 @@ public class Gen1Pokemon extends Pokemon {
         shuffledStatsOrder = Arrays.asList(0, 1, 2, 3, 4);
     }
 
-    @Override
-    public String toString() {
-        return "Pokemon [name=" + name + ", number=" + number + ", primaryType=" + primaryType + ", secondaryType="
-                + secondaryType + ", hp=" + hp + ", attack=" + attack + ", defense=" + defense + ", special=" + special
-                + ", speed=" + speed + "]";
-    }
 }

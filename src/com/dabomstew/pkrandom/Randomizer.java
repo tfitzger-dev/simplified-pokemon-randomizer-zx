@@ -192,8 +192,7 @@ public class Randomizer {
             StaticEncounter oldP = oldStatics.get(i);
             StaticEncounter newP = newStatics.get(i);
             checkValue = addToCV(checkValue, newP.pkmn.number);
-            String oldStaticString = oldP.toString(settings.isStaticLevelModified());
-            log.print(oldStaticString);
+            String oldStaticString = oldP.toString();
             if (seenPokemon.containsKey(oldStaticString)) {
                 int amount = seenPokemon.get(oldStaticString);
                 log.print("(" + (++amount) + ")");
@@ -201,7 +200,7 @@ public class Randomizer {
             } else {
                 seenPokemon.put(oldStaticString, 1);
             }
-            log.println(" => " + newP.toString(settings.isStaticLevelModified()));
+            log.println(" => " + newP.toString());
         }
         log.println();
 

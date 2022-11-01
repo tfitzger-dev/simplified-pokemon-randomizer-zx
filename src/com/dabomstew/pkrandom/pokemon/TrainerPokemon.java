@@ -39,14 +39,5 @@ public class TrainerPokemon {
 
     public boolean resetMoves = false;
 
-    public String toString() {
-        String s = pokemon.name + formeSuffix;
-        if (heldItem != 0) {
-            // This can be filled in with the actual name when written to the log.
-            s += "@%s";
-        }
-        s+= " Lv" + level;
-        return s;
-    }
 
 }

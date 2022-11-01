@@ -48,34 +48,14 @@ public class StaticEncounter {
         this.linkedEncounters = new ArrayList<>();
     }
 
-    @Override
-    public String toString() {
-        return this.toString(true);
-    }
 
-    public String toString(boolean printLevel) {
+    public String toString() {
         if (isEgg) {
             return pkmn.fullName() + " (egg)";
         }
-        else if (!printLevel) {
+        else{
             return pkmn.fullName();
         }
-        StringBuilder levelStringBuilder = new StringBuilder("Lv" + level);
-        if (maxLevel > 0) {
-            levelStringBuilder.append("-").append(maxLevel);
-        }
-        boolean needToDisplayLinkedLevels = false;
-        for (int i = 0; i < linkedEncounters.size(); i++) {
-            if (level != linkedEncounters.get(i).level) {
-                needToDisplayLinkedLevels = true;
-            }
-        }
-        if (needToDisplayLinkedLevels) {
-            for (int i = 0; i < linkedEncounters.size(); i++) {
-                levelStringBuilder.append(" / ").append("Lv").append(linkedEncounters.get(i).level);
-            }
-        }
-        return pkmn.fullName() + ", " + levelStringBuilder.toString();
     }
 
 }

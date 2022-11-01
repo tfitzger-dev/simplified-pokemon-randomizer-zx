@@ -32,12 +32,6 @@ public class Move {
         public int stages;
         public double percentChance;
 
-        @Override
-        public boolean equals(Object obj) {
-            StatChange other = (StatChange)obj;
-            return this.type == other.type && this.stages == other.stages && this.percentChance == other.percentChance;
-        }
-
     }
 
     public String name;
@@ -47,7 +41,6 @@ public class Move {
     public int pp;
     public double hitratio;
     public Type type;
-    public MoveCategory category;
     public StatChangeMoveType statChangeMoveType = StatChangeMoveType.NONE_OR_UNKNOWN;
     public StatChange[] statChanges = new StatChange[3];
     public StatusMoveType statusMoveType = StatusMoveType.NONE_OR_UNKNOWN;
@@ -58,13 +51,10 @@ public class Move {
     public int recoilPercent;
     public int absorbPercent;
     public int priority;
-    public boolean makesContact;
     public boolean isChargeMove;
     public boolean isRechargeMove;
-    public boolean isSoundMove;
     public boolean isTrapMove; // True for both binding moves (like Wrap) and trapping moves (like Mean Look)
     public int effectIndex;
-    public int target;
     public double hitCount = 1; // not saved, only used in randomized move powers.
 
     public Move() {
@@ -74,11 +64,6 @@ public class Move {
             this.statChanges[i] = new StatChange();
             this.statChanges[i].type = StatChangeType.NONE;
         }
-    }
-
-    public String toString() {
-        return "#" + number + " " + name + " - Power: " + power + ", Base PP: " + pp + ", Type: " + type + ", Hit%: "
-                + (hitratio) + ", Effect: " + effectIndex + ", Priority: " + priority;
     }
 
 }

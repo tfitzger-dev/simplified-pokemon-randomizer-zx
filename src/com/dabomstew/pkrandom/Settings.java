@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 import com.dabomstew.pkrandom.pokemon.ExpCurve;
-import com.dabomstew.pkrandom.pokemon.GenRestrictions;
 import com.dabomstew.pkrandom.pokemon.Pokemon;
 import com.dabomstew.pkrandom.romhandlers.Gen1RomHandler;
 import com.dabomstew.pkrandom.romhandlers.Gen2RomHandler;
@@ -52,7 +51,6 @@ public class Settings {
 
     private String romName;
     private boolean updatedFromOldVersion = false;
-    private GenRestrictions currentRestrictions;
     private int currentMiscTweaks;
 
     private boolean changeImpossibleEvolutions;
@@ -481,9 +479,7 @@ public class Settings {
 
         // 28 - 31: pokemon restrictions
         try {
-            if (currentRestrictions != null) {
-                writeFullInt(out, currentRestrictions.toInt());
-            } else {
+            {
                 writeFullInt(out, 0);
             }
         } catch (IOException e) {
@@ -783,14 +779,6 @@ public class Settings {
         settings.setShinyChance(restoreState(data[27], 6));
         settings.setBetterTrainerMovesets(restoreState(data[27], 7));
 
-        // gen restrictions
-        int genLimit = FileFunctions.readFullIntBigEndian(data, 28);
-        GenRestrictions restrictions = null;
-        if (genLimit != 0) {
-            restrictions = new GenRestrictions(genLimit);
-        }
-        settings.setCurrentRestrictions(restrictions);
-
         int codeTweaks = FileFunctions.readFullIntBigEndian(data, 32);
 
         settings.setCurrentMiscTweaks(codeTweaks);
@@ -912,14 +900,6 @@ public class Settings {
             }
         }
 
-        // gen restrictions
-        if (rh instanceof Gen1RomHandler || (rh instanceof Gen3RomHandler && !rh.isRomValid())) {
-            this.currentRestrictions = null;
-            this.setLimitPokemon(false);
-        } else if (this.currentRestrictions != null) {
-            this.currentRestrictions.limitToGen(rh.generationOfPokemon());
-        }
-
         // gen 5 exclusive stuff
         if (rh.generationOfPokemon() != 5) {
             if (trainersMod == TrainersMod.MAINPLAYTHROUGH) {
@@ -1009,14 +989,6 @@ public class Settings {
 
     private void setUpdatedFromOldVersion(boolean updatedFromOldVersion) {
         this.updatedFromOldVersion = updatedFromOldVersion;
-    }
-
-    public GenRestrictions getCurrentRestrictions() {
-        return currentRestrictions;
-    }
-
-    public void setCurrentRestrictions(GenRestrictions currentRestrictions) {
-        this.currentRestrictions = currentRestrictions;
     }
 
     public int getCurrentMiscTweaks() {

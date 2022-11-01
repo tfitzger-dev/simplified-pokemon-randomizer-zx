@@ -30,15 +30,5 @@ public class Encounter {
     public int maxLevel;
     public Pokemon pokemon;
 
-    public String toString() {
-        if (pokemon == null) {
-            return "ERROR";
-        }
-        if (maxLevel == 0) {
-            return pokemon.name + " Lv" + level;
-        } else {
-            return pokemon.name + " Lvs " + level + "-" + maxLevel;
-        }
-    }
 
 }

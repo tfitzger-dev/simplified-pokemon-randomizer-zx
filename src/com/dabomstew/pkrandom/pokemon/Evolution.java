@@ -24,7 +24,7 @@ package com.dabomstew.pkrandom.pokemon;
 /*--  along with this program. If not, see <http://www.gnu.org/licenses/>.  --*/
 /*----------------------------------------------------------------------------*/
 
-public class Evolution implements Comparable<Evolution> {
+public class Evolution {
 
     public Pokemon from;
     public Pokemon to;
@@ -41,38 +41,9 @@ public class Evolution implements Comparable<Evolution> {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + from.number;
-        result = prime * result + to.number;
-        result = prime * result + type.ordinal();
-        return result;
-    }
-
-    @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
         Evolution other = (Evolution) obj;
         return from == other.from && to == other.to && type == other.type;
-    }
-
-    @Override
-    public int compareTo(Evolution o) {
-        if (this.from.number < o.from.number) {
-            return -1;
-        } else if (this.from.number > o.from.number) {
-            return 1;
-        } else if (this.to.number < o.to.number) {
-            return -1;
-        } else if (this.to.number > o.to.number) {
-            return 1;
-        } else return Integer.compare(this.type.ordinal(), o.type.ordinal());
     }
 
 }

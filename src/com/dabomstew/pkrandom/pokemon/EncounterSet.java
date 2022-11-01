@@ -37,8 +37,5 @@ public class EncounterSet {
     public String displayName;
     public int offset;
 
-    public String toString() {
-        return "Encounter [Rate = " + rate + ", Encounters = " + encounters + "]";
-    }
 
 }
