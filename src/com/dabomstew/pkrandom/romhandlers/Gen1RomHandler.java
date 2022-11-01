@@ -572,11 +572,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     }
 
     @Override
-    public Pokemon randomPokemonInclFormes() {
-        return null;
-    }
-
-    @Override
     public List<EncounterSet> getEncounters(boolean useTimeOfDay) {
         List<EncounterSet> encounters = new ArrayList<>();
 
@@ -1016,11 +1011,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         return new ArrayList<>();
     }
 
-    @Override
-    public boolean hasMoveTutors() {
-        return false;
-    }
-
     private void populateEvolutions() {
         for (Pokemon pkmn : pokes) {
             if (pkmn != null) {
@@ -1088,11 +1078,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     @Override
     public void removeTimeBasedEvolutions() {
         // No such thing
-    }
-
-    @Override
-    public boolean hasShopRandomization() {
-        return false;
     }
 
     private List<String> getTrainerClassesForText() {
@@ -1322,11 +1307,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         return 1;
     }
 
-    @Override
-    public boolean supportsFourStartingMoves() {
-        return true;
-    }
-
     private void writeEvosAndMovesLearnt(Map<Integer, List<MoveLearnt>> movesets) {
         // we assume a few things here:
         // 1) evos & moves learnt are stored directly after their pointer table
@@ -1466,11 +1446,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         if (extraSpaceEnabled) {
             System.arraycopy(extraDataBlock, 0, rom, extraSpaceOffset, extraDataBlock.length);
         }
-    }
-
-    @Override
-    public boolean isRomValid() {
-        return romEntry.expectedCRC32 == actualCRC32;
     }
 
 }

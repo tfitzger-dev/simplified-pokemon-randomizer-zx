@@ -735,11 +735,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
     }
 
     @Override
-    public Pokemon randomPokemonInclFormes() {
-        return null;
-    }
-
-    @Override
     public List<EncounterSet> getEncounters(boolean useTimeOfDay) {
         int offset = romEntry.getValue("WildPokemonOffset");
         List<EncounterSet> areas = new ArrayList<>();
@@ -1287,11 +1282,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         System.arraycopy(rawData, 0, rom, offset, length);
     }
 
-    @Override
-    public boolean hasMoveTutors() {
-        return romEntry.isCrystal;
-    }
-
     private static int find(byte[] haystack, String hexString) {
         byte[] searchFor = new byte[hexString.length() / 2];
         for (int i = 0; i < searchFor.length; i++) {
@@ -1300,11 +1290,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         List<Integer> found = RomFunctions.search(haystack, searchFor);
         return found.get(0);
 
-    }
-
-    @Override
-    public boolean hasTimeBasedEncounters() {
-        return true; // All GSC do
     }
 
     private void populateEvolutions() {
@@ -1440,11 +1425,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
             }
         }
 
-    }
-
-    @Override
-    public boolean hasShopRandomization() {
-        return false;
     }
 
     @Override
@@ -1746,16 +1726,6 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         // write new data
         System.arraycopy(pointerTable, 0, rom, movesEvosStart, pointerTable.length);
         System.arraycopy(dataBlock, 0, rom, dataBlockOffset, dataBlock.length);
-    }
-
-    @Override
-    public boolean supportsFourStartingMoves() {
-        return (romEntry.getValue("SupportsFourStartingMoves") > 0);
-    }
-
-    @Override
-    public boolean isRomValid() {
-        return true; //romEntry.expectedCRC32 == actualCRC32;
     }
 
     @Override

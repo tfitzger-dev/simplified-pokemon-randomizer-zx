@@ -66,7 +66,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         private Map<String, String> strings = new HashMap<>();
         private List<StaticPokemon> staticPokemon = new ArrayList<>();
         private List<StaticPokemon> roamingPokemon = new ArrayList<>();
-        private List<TMOrMTTextEntry> tmmtTexts = new ArrayList<>();
         private Map<String, String> codeTweaks = new HashMap<String, String>();
         private long expectedCRC32 = -1;
 
@@ -86,7 +85,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             this.strings.putAll(toCopy.strings);
             this.staticPokemon.addAll(toCopy.staticPokemon);
             this.roamingPokemon.addAll(toCopy.roamingPokemon);
-            this.tmmtTexts.addAll(toCopy.tmmtTexts);
             this.codeTweaks.putAll(toCopy.codeTweaks);
             this.expectedCRC32 = toCopy.expectedCRC32;
         }
@@ -97,14 +95,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
             }
             return entries.get(key);
         }
-    }
-
-    private static class TMOrMTTextEntry {
-        private int number;
-        private int mapBank, mapNumber;
-        private int personNum;
-        private int offsetInScript;
-        private boolean isMoveTutor;
     }
 
     private static List<RomEntry> roms;
@@ -139,27 +129,9 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                             current.roamingPokemon.add(parseStaticPokemon(r[1]));
                         } else if (r[0].equals("TMText[]")) {
                             if (r[1].startsWith("[") && r[1].endsWith("]")) {
-                                String[] parts = r[1].substring(1, r[1].length() - 1).split(",", 6);
-                                TMOrMTTextEntry tte = new TMOrMTTextEntry();
-                                tte.number = parseRIInt(parts[0]);
-                                tte.mapBank = parseRIInt(parts[1]);
-                                tte.mapNumber = parseRIInt(parts[2]);
-                                tte.personNum = parseRIInt(parts[3]);
-                                tte.offsetInScript = parseRIInt(parts[4]);
-                                tte.isMoveTutor = false;
-                                current.tmmtTexts.add(tte);
                             }
                         } else if (r[0].equals("MoveTutorText[]")) {
                             if (r[1].startsWith("[") && r[1].endsWith("]")) {
-                                String[] parts = r[1].substring(1, r[1].length() - 1).split(",", 6);
-                                TMOrMTTextEntry tte = new TMOrMTTextEntry();
-                                tte.number = parseRIInt(parts[0]);
-                                tte.mapBank = parseRIInt(parts[1]);
-                                tte.mapNumber = parseRIInt(parts[2]);
-                                tte.personNum = parseRIInt(parts[3]);
-                                tte.offsetInScript = parseRIInt(parts[4]);
-                                tte.isMoveTutor = true;
-                                current.tmmtTexts.add(tte);
                             }
                         } else if (r[0].equals("Game")) {
                             current.romCode = r[1];
@@ -201,7 +173,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                                         current.entries.put("StaticPokemonSupport", 0);
                                     }
                                     if (cTT) {
-                                        current.tmmtTexts.addAll(otherEntry.tmmtTexts);
+                                        /*current.tmmtTexts.addAll(otherEntry.tmmtTexts);*/
                                     }
                                     current.tableFile = otherEntry.tableFile;
                                 }
@@ -423,29 +395,20 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         if (searchPref.length >= searchSuff.length) {
             // Prefix first
             List<Integer> offsets = RomFunctions.search(rom, searchPref);
-            for (int prefOffset : offsets) {
+            return offsets.stream().findFirst().orElse(-1);
+            /*for (int prefOffset : offsets) {
                 int ptrOffset = prefOffset + searchPref.length;
-                int pointerValue = readPointer(ptrOffset);
-                if (pointerValue < 0 || pointerValue >= rom.length) {
-                    // Not a valid pointer
-                    continue;
-                }
                 boolean suffixMatch = true;
-                for (int i = 0; i < searchSuff.length; i++) {
-                    if (rom[ptrOffset + 4 + i] != searchSuff[i]) {
-                        suffixMatch = false;
-                        break;
-                    }
-                }
                 if (suffixMatch) {
-                    return ptrOffset;
+                    ptr = ptrOffset;
+                    break;
                 }
-            }
-            return -1; // No match
+            }*/
         } else {
             // Suffix first
             List<Integer> offsets = RomFunctions.search(rom, searchSuff);
-            for (int suffOffset : offsets) {
+            return offsets.stream().findFirst().orElse(-1);
+/*            for (int suffOffset : offsets) {
                 int ptrOffset = suffOffset - 4;
                 boolean prefixMatch = true;
                 for (int i = 0; i < searchPref.length; i++) {
@@ -458,7 +421,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                     return ptrOffset;
                 }
             }
-            return -1; // No match
+            return -1; // No match*/
         }
     }
 
@@ -851,11 +814,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     @Override
     public int starterCount() {
         return 3;
-    }
-
-    @Override
-    public Pokemon randomPokemonInclFormes() {
-        return null;
     }
 
     private void writeFRLGStarterText(List<Integer> foundTexts, Pokemon pkmn, String oakText) {
@@ -1547,11 +1505,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         rom[offset + 51] = 0x00;
     }
 
-    @Override
-    public boolean hasMoveTutors() {
-        return (romEntry.romType == Gen3Constants.RomType_Em || romEntry.romType == Gen3Constants.RomType_FRLG);
-    }
-
     // For dynamic offsets later
     private int find(String hexString) {
         return find(rom, hexString);
@@ -1826,11 +1779,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     }
 
     @Override
-    public boolean hasShopRandomization() {
-        return true;
-    }
-
-    @Override
     public List<String> getTrainerClassNames() {
         int baseOffset = romEntry.getValue("TrainerClassNames");
         int amount = romEntry.getValue("TrainerClassCount");
@@ -2061,29 +2009,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                                 }
                             }
                         }
-                        // TM Text?
-                        for (TMOrMTTextEntry tte : romEntry.tmmtTexts) {
-                            if (tte.mapBank == bank && tte.mapNumber == map) {
-                                // process this one
-                                int scriptOffset = readPointer(peopleOffset + (tte.personNum - 1) * 24 + 16);
-                                if (scriptOffset >= 0) {
-                                    if (romEntry.romType == Gen3Constants.RomType_FRLG && tte.isMoveTutor
-                                            && (tte.number == 5 || (tte.number >= 8 && tte.number <= 11))) {
-                                        scriptOffset = readPointer(scriptOffset + 1);
-                                    } else if (romEntry.romType == Gen3Constants.RomType_FRLG && tte.isMoveTutor
-                                            && tte.number == 7) {
-                                        scriptOffset = readPointer(scriptOffset + 0x1F);
-                                    }
-                                    int lookAt = scriptOffset + tte.offsetInScript;
-                                    // make sure this actually looks like a text
-                                    // pointer
-                                    if (lookAt >= 0 && lookAt < rom.length - 2) {
-                                        if (rom[lookAt + 3] == 0x08 || rom[lookAt + 3] == 0x09) {
-                                        }
-                                    }
-                                }
-                            }
-                        }
+
                     }
 
                     if (spCount > 0) {
@@ -2118,11 +2044,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
     @Override
     public int generationOfPokemon() {
         return 3;
-    }
-
-    @Override
-    public boolean supportsFourStartingMoves() {
-        return true;
     }
 
     @Override
@@ -2173,11 +2094,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    @Override
-    public boolean isRomValid() {
-        return true;
     }
 
 }

@@ -65,13 +65,6 @@ public abstract class AbstractGBRomHandler extends AbstractRomHandler {
         }
     }
 
-    @Override
-    public boolean hasPhysicalSpecialSplit() {
-        // Default value for Gen1-Gen3.
-        // Handlers can override again in case of ROM hacks etc.
-        return false;
-    }
-
     public abstract void loadedRom();
 
     public abstract void savingRom();

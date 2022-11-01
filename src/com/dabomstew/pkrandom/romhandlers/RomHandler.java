@@ -64,8 +64,6 @@ public interface RomHandler {
     // Log methods
     // ===========
 
-    boolean isRomValid();
-
     // ======================================================
     // Methods for retrieving a list of Pokemon objects.
     // Note that for many of these lists, index 0 is null.
@@ -105,8 +103,6 @@ public interface RomHandler {
     // Give a random Pokemon who's in this game
     Pokemon randomPokemon();
 
-    Pokemon randomPokemonInclFormes();
-
     // Give a random non-legendary Pokemon who's in this game
     // Business rules for who's legendary are in Pokemon class
     Pokemon randomNonLegendaryPokemon();
@@ -142,8 +138,6 @@ public interface RomHandler {
 
     void area1to1Encounters(Settings settings);
 
-    boolean hasTimeBasedEncounters();
-
     // ===============
     // Trainer Pokemon
     // ===============
@@ -162,8 +156,6 @@ public interface RomHandler {
     // Move Data
     // =========
 
-    boolean hasPhysicalSpecialSplit();
-
     // return all the moves valid in this game.
     List<Move> getMoves();
 
@@ -172,8 +164,6 @@ public interface RomHandler {
     // ================
 
     Map<Integer, List<MoveLearnt>> getMovesLearnt();
-
-    boolean supportsFourStartingMoves();
 
     // ==============
     // Static Pokemon
@@ -203,8 +193,6 @@ public interface RomHandler {
     // Move Tutors
     // ===========
 
-    boolean hasMoveTutors();
-
     // =============
     // Trainer Names
     // =============
@@ -233,8 +221,6 @@ public interface RomHandler {
     // ============
     // Special Shops
     // =============
-
-    boolean hasShopRandomization();
 
     // ============
     // Pickup Items

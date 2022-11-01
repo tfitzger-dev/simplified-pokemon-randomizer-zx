@@ -136,7 +136,6 @@ public abstract class AbstractRomHandler implements RomHandler {
     public void randomEncounters(Settings settings) {
         boolean useTimeOfDay = settings.isUseTimeBasedEncounters();
         boolean noLegendaries = settings.isBlockWildLegendaries();
-        boolean allowAltFormes = settings.isAllowWildAltFormes();
 
         List<EncounterSet> currentEncounters = this.getEncounters(useTimeOfDay);
 
@@ -149,7 +148,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         // Entirely random
         for (EncounterSet area : scrambledEncounters) {
             for (Encounter enc : area.encounters) {
-                enc.pokemon = pickEntirelyRandomPokemon(allowAltFormes, noLegendaries, area, Collections.emptyList());
+                enc.pokemon = pickEntirelyRandomPokemon(noLegendaries, area, Collections.emptyList());
             }
         }
 
@@ -1001,14 +1000,14 @@ public abstract class AbstractRomHandler implements RomHandler {
         return canPick.get(this.random.nextInt(canPick.size()));
     }
 
-    public Pokemon pickEntirelyRandomPokemon(boolean includeFormes, boolean noLegendaries, EncounterSet area, List<Pokemon> banned) {
+    public Pokemon pickEntirelyRandomPokemon(boolean noLegendaries, EncounterSet area, List<Pokemon> banned) {
         Pokemon result;
         Pokemon randomNonLegendaryPokemon = randomNonLegendaryPokemon();
-        Pokemon randomPokemon = includeFormes ? randomPokemonInclFormes() : randomPokemon();
+        Pokemon randomPokemon = randomPokemon();
         result = noLegendaries ? randomNonLegendaryPokemon : randomPokemon;
         while (banned.contains(result) || area.bannedPokemon.contains(result)) {
             randomNonLegendaryPokemon = randomNonLegendaryPokemon();
-            randomPokemon = includeFormes ? randomPokemonInclFormes() : randomPokemon();
+            randomPokemon = randomPokemon();
             result = noLegendaries ? randomNonLegendaryPokemon : randomPokemon;
         }
         return result;
@@ -1062,12 +1061,6 @@ public abstract class AbstractRomHandler implements RomHandler {
     @Override
     public boolean typeInGame(Type type) {
         return !type.isHackOnly && !(type == Type.FAIRY && generationOfPokemon() < 6);
-    }
-
-    @Override
-    public boolean hasTimeBasedEncounters() {
-        // DEFAULT: no
-        return false;
     }
 
     @Override
