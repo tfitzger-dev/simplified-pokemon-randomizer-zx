@@ -43,7 +43,7 @@ public abstract class AbstractGBCRomHandler extends AbstractGBRomHandler {
     private Map<String, Byte> d;
     private int longestTableToken;
 
-    public AbstractGBCRomHandler(Random random, PrintStream logStream) {
+    public AbstractGBCRomHandler(Random random) {
         super(random);
     }
 

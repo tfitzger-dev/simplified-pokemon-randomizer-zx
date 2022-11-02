@@ -591,10 +591,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                         // Else if it's just too high, bring it down
                         if (checkEvo.extraInfo > maxIntermediateLevel && checkEvo.to.evolutionsFrom.size() > 0) {
                             checkEvo.extraInfo = maxIntermediateLevel;
-                            addEvoUpdateCondensed(easierEvolutionUpdates, checkEvo, false);
+                            addEvoUpdateCondensed(easierEvolutionUpdates, checkEvo);
                         } else if (checkEvo.extraInfo > maxLevel) {
                             checkEvo.extraInfo = maxLevel;
-                            addEvoUpdateCondensed(easierEvolutionUpdates, checkEvo, false);
+                            addEvoUpdateCondensed(easierEvolutionUpdates, checkEvo);
                         }
                     }
                 }
@@ -610,24 +610,22 @@ public abstract class AbstractRomHandler implements RomHandler {
     protected void addEvoUpdateLevel(Set<EvolutionUpdate> evolutionUpdates, Evolution evo) {
         Pokemon pkFrom = evo.from;
         Pokemon pkTo = evo.to;
-        int level = evo.extraInfo;
-        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo, EvolutionType.LEVEL, String.valueOf(level),
-                false, false));
+        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo
+        ));
     }
 
-    protected void addEvoUpdateStone(Set<EvolutionUpdate> evolutionUpdates, Evolution evo, String item) {
+    protected void addEvoUpdateStone(Set<EvolutionUpdate> evolutionUpdates, Evolution evo) {
         Pokemon pkFrom = evo.from;
         Pokemon pkTo = evo.to;
-        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo, EvolutionType.STONE, item,
-                false, false));
+        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo
+        ));
     }
 
-    protected void addEvoUpdateCondensed(Set<EvolutionUpdate> evolutionUpdates, Evolution evo, boolean additional) {
+    protected void addEvoUpdateCondensed(Set<EvolutionUpdate> evolutionUpdates, Evolution evo) {
         Pokemon pkFrom = evo.from;
         Pokemon pkTo = evo.to;
-        int level = evo.extraInfo;
-        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo, EvolutionType.LEVEL, String.valueOf(level),
-                true, additional));
+        evolutionUpdates.add(new EvolutionUpdate(pkFrom, pkTo
+        ));
     }
 
     private List<Pokemon> pokemonOfType(Type type, boolean noLegendaries) {

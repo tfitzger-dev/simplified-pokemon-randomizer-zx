@@ -156,9 +156,6 @@ public interface RomHandler {
     // Move Data
     // =========
 
-    // return all the moves valid in this game.
-    List<Move> getMoves();
-
     // ================
     // Pokemon Movesets
     // ================

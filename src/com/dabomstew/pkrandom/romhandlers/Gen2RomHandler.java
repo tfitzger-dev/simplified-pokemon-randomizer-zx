@@ -41,7 +41,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
 
         @Override
         public Gen2RomHandler create(Random random, PrintStream logStream) {
-            return new Gen2RomHandler(random, logStream);
+            return new Gen2RomHandler(random);
         }
 
         public boolean isLoadable(String filename) {
@@ -55,8 +55,8 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
         }
     }
 
-    public Gen2RomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+    public Gen2RomHandler(Random random) {
+        super(random);
     }
 
     private static class RomEntry {
@@ -1362,7 +1362,7 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
                             // Slowpoke: Make water stone => Slowking
                             evol.type = EvolutionType.STONE;
                             evol.extraInfo = Gen2Items.waterStone;
-                            addEvoUpdateStone(impossibleEvolutionUpdates, evol, itemNames[24]);
+                            addEvoUpdateStone(impossibleEvolutionUpdates, evol);
                         } else if (evol.from.number == Species.seadra) {
                             // Seadra: level 40
                             evol.type = EvolutionType.LEVEL;
@@ -1414,12 +1414,12 @@ public class Gen2RomHandler extends AbstractGBCRomHandler {
                         // Eevee: Make sun stone => Espeon
                         evol.type = EvolutionType.STONE;
                         evol.extraInfo = Gen2Items.sunStone;
-                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol, itemNames[169]);
+                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol);
                     } else if (evol.type == EvolutionType.HAPPINESS_NIGHT) {
                         // Eevee: Make moon stone => Umbreon
                         evol.type = EvolutionType.STONE;
                         evol.extraInfo = Gen2Items.moonStone;
-                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol, itemNames[8]);
+                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol);
                     }
                 }
             }

@@ -43,7 +43,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
 
         @Override
         public Gen1RomHandler create(Random random, PrintStream logStream) {
-            return new Gen1RomHandler(random, logStream);
+            return new Gen1RomHandler(random);
         }
 
         public boolean isLoadable(String filename) {
@@ -57,8 +57,8 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         }
     }
 
-    public Gen1RomHandler(Random random, PrintStream logStream) {
-        super(random, logStream);
+    public Gen1RomHandler(Random random) {
+        super(random);
     }
 
     // Important RBY Data Structures
@@ -85,7 +85,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         private int version, nonJapanese;
         private String extraTableFile;
         private boolean isYellow;
-        private long expectedCRC32 = -1;
         private int crcInHeader = -1;
         private Map<String, String> tweakFiles = new HashMap<>();
         private Map<String, Integer> entries = new HashMap<>();
@@ -149,7 +148,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
                         } else if (r[0].equals("CRCInHeader")) {
                             current.crcInHeader = parseRIInt(r[1]);
                         } else if (r[0].equals("CRC32")) {
-                            current.expectedCRC32 = parseRILong("0x" + r[1]);
                         } else if (r[0].endsWith("Tweak")) {
                             current.tweakFiles.put(r[0], r[1]);
                         } else if (r[0].equals("ExtraTypes")) {
@@ -239,7 +237,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         }
     }
 
-    private static long parseRILong(String off) {
+/*    private static long parseRILong(String off) {
         int radix = 10;
         off = off.trim().toLowerCase();
         if (off.startsWith("0x") || off.startsWith("&h")) {
@@ -252,7 +250,7 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
             System.err.println("invalid base " + radix + "number " + off);
             return 0;
         }
-    }
+    }*/
 
     // This ROM's data
     private Pokemon[] pokes;
@@ -260,7 +258,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
     private RomEntry romEntry;
     private String[] mapNames;
     private SubMap[] maps;
-    private long actualCRC32;
 
     public static boolean detectRomInner(byte[] rom, int romSize) {
         // size check
@@ -283,7 +280,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
         pokemonList = Arrays.asList(pokes);
         preloadMaps();
         loadMapNames();
-        actualCRC32 = FileFunctions.getCRC32(rom);
     }
 
     private void loadPokedexOrder() {
@@ -922,11 +918,6 @@ public class Gen1RomHandler extends AbstractGBCRomHandler {
             rom[champRivalJump + 1] = GBConstants.gbZ80Nop;
         }
 
-    }
-
-    @Override
-    public List<Move> getMoves() {
-        return null;
     }
 
     @Override

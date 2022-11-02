@@ -70,8 +70,6 @@ public class CliRandomizer {
                     Randomizer randomizer = new Randomizer(settings, romHandler);
                     randomizer.randomize(filename, verboseLog);
                     verboseLog.close();
-                    byte[] out = baos.toByteArray();
-
                     System.out.println("Randomized successfully!");
                     // this is the only successful exit, everything else will return false at the end of the function
                     return true;
@@ -90,8 +88,6 @@ public class CliRandomizer {
         String sourceRomFilePath = null;
         String outputRomFilePath = null;
         boolean saveAsDirectory = false;
-        String updateFilePath = null;
-        boolean saveLog = false;
 
         List<String> allowedFlags = Arrays.asList("-i", "-o", "-s", "-d", "-u", "-l", "--help");
         for (int i = 0; i < args.length; i++) {

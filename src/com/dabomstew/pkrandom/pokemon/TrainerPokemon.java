@@ -33,7 +33,6 @@ public class TrainerPokemon {
 
     public int heldItem = 0;
     public int abilitySlot;
-    public String formeSuffix = "";
 
     public int IVs;
 

@@ -542,10 +542,6 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
         writeEvolutions();
     }
 
-    public List<Move> getMoves() {
-        return Collections.emptyList();
-    }
-
     private void loadBasicPokeStats(Pokemon pkmn, int offset) {
         pkmn.hp = rom[offset + Gen3Constants.bsHPOffset] & 0xFF;
         pkmn.attack = rom[offset + Gen3Constants.bsAttackOffset] & 0xFF;
@@ -1669,13 +1665,13 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                         // happiness day change to Sun Stone
                         evo.type = EvolutionType.STONE;
                         evo.extraInfo = Gen3Items.sunStone;
-                        addEvoUpdateStone(impossibleEvolutionUpdates, evo, itemNames[Gen3Items.sunStone]);
+                        addEvoUpdateStone(impossibleEvolutionUpdates, evo);
                     }
                     if (evo.type == EvolutionType.HAPPINESS_NIGHT && romEntry.romType == Gen3Constants.RomType_FRLG) {
                         // happiness night change to Moon Stone
                         evo.type = EvolutionType.STONE;
                         evo.extraInfo = Gen3Items.moonStone;
-                        addEvoUpdateStone(impossibleEvolutionUpdates, evo, itemNames[Gen3Items.moonStone]);
+                        addEvoUpdateStone(impossibleEvolutionUpdates, evo);
                     }
                     if (evo.type == EvolutionType.LEVEL_HIGH_BEAUTY && romEntry.romType == Gen3Constants.RomType_FRLG) {
                         // beauty change to level 35
@@ -1702,7 +1698,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                             // Slowpoke: Water Stone
                             evo.type = EvolutionType.STONE;
                             evo.extraInfo = Gen3Items.waterStone;
-                            addEvoUpdateStone(impossibleEvolutionUpdates, evo, itemNames[Gen3Items.waterStone]);
+                            addEvoUpdateStone(impossibleEvolutionUpdates, evo);
                         } else if (evo.from.number == Species.seadra) {
                             // Seadra: Lv 40
                             evo.type = EvolutionType.LEVEL;
@@ -1719,7 +1715,7 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                             // Clamperl -> Gorebyss: Water Stone
                             evo.type = EvolutionType.STONE;
                             evo.extraInfo = Gen3Items.waterStone;
-                            addEvoUpdateStone(impossibleEvolutionUpdates, evo, itemNames[Gen3Items.waterStone]);
+                            addEvoUpdateStone(impossibleEvolutionUpdates, evo);
                         } else {
                             // Onix, Scyther or Porygon: Lv30
                             evo.type = EvolutionType.LEVEL;
@@ -1766,12 +1762,12 @@ public class Gen3RomHandler extends AbstractGBRomHandler {
                         // Eevee: Make sun stone => Espeon
                         evol.type = EvolutionType.STONE;
                         evol.extraInfo = Gen3Items.sunStone;
-                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol, itemNames[evol.extraInfo]);
+                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol);
                     } else if (evol.type == EvolutionType.HAPPINESS_NIGHT) {
                         // Eevee: Make moon stone => Umbreon
                         evol.type = EvolutionType.STONE;
                         evol.extraInfo = Gen3Items.moonStone;
-                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol, itemNames[evol.extraInfo]);
+                        addEvoUpdateStone(timeBasedEvolutionUpdates, evol);
                     }
                 }
             }
