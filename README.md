@@ -1,4 +1,6 @@
-Universal Pokemon Randomizer ZX by Ajarmar
+Fork from Universal Pokemon Randomizer ZX by Ajarmar
+
+The intent of this is to trim down the functionality to be able to be migrated to a libretro core that can be loaded to handheld emulator devices. This fork does not intend to ever merge back into the primary repo.
 
 With significant contributions from darkeye, cleartonic
 
